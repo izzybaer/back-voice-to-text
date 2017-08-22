@@ -12,3 +12,56 @@ import four04 from '../middleware/4-0-4.js'
 import errorHandler from '../middleware/error-middleware.js'
 
 // import documentSubscriber from '../subscribers/document.js'
+
+const app = express()
+
+app.use(morgan('dev'))
+app.use(cors({
+  origin: process.env.CORS_ORIGINS.split(' '),
+  credentials: true,
+}))
+
+app.use(documentRouter)
+
+app.use(four04)
+app.use(errorHandler)
+
+const state = {
+  isOn: false,
+  http: null,
+}
+
+export const start = () =>
+  new Promise((resolve, reject) => {
+    if(state.isOn)
+      return reject(new Error('ERROR: Server is already running'))
+    state.isOn = true
+    mongo.start()
+      .then(() => {
+        state.http = Server(app)
+        // let subscribers = {...documentSubscriber}
+        // io(state.http, subscribers)
+
+        state.http.listen(process.env.PORT, () => {
+          console.log('__SERVER_UP__', process.env.API_URL)
+          resolve()
+        })
+      })
+      .catch(reject)
+  })
+
+export const stop = () =>
+  new Promise((resolve, reject) => {
+    if(!state.isOn)
+      return reject(new Error('ERROR: Server is already offline'))
+    return mongo.stop()
+      .then(() => {
+        state.http.close(() => {
+          console.log('__SERVER_DOWN__')
+          state.isOn = false
+          state.http = null
+          resolve()
+        })
+      })
+      .catch(reject)
+  })
