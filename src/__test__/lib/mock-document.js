@@ -16,3 +16,5 @@ mockDocument.createOne = () =>
 
 mockDocument.createMany = n =>
   Promise.all(new Array(n).fill(0).map(() => mockDocument.createOne()))
+
+export default mockDocument
