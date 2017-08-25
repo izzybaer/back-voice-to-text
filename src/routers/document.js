@@ -26,12 +26,21 @@ documentRouter.post('/document', jsonParser, (req, res, next) => {
     .catch(next)
 })
 
+
 documentRouter.get('/document/:id', (req, res, next) => {
   let docId = req.params.id
   console.log('__LOG__ GET document id', docId)
 
   Document.findById(docId)
     .then(document => document ? res.json(document) : res.sendStatus(404))
+    .catch(next)
+})
+
+documentRouter.get('/document', (req, res, next) => {
+  console.log('__LOG__ GET all docs')
+
+  Document.find({})
+    .then(documents => res.json(documents))
     .catch(next)
 })
 
