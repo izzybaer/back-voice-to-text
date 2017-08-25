@@ -14,8 +14,20 @@ describe('Testing Document router', () => {
   afterAll(server.stop)
   afterEach(cleanDB)
 
+  describe('Testing bad route', () => {
+    test('It should return 404 not found', () => {
+      return superagent.get(`${API_URL}/fake`)
+        .then(res => {
+          throw res
+        })
+        .catch(err => {
+          expect(err.status).toEqual(404)
+        })
+    })
+  })
+
   describe('Testing POST /document', () => {
-    test('It should return the sent document from mongo', () => {
+    test('It should return 200 and the sent document from mongo', () => {
       return superagent.post(`${API_URL}/document`)
         .send({
           title: 'Mockument',
@@ -29,11 +41,22 @@ describe('Testing Document router', () => {
           expect(document.body.body).toEqual('Here is me talking to a class during a lecture and stuff')
         })
     })
+
+    test('It should return 400 bad request', () => {
+      return superagent.post(`${API_URL}/document`)
+        .send({})
+        .then(res => {
+          throw res
+        })
+        .catch(err => {
+          expect(err.status).toEqual(400)
+        })
+    })
   })
 
   describe('Testing GET /document:id', () => {
     let tempDoc
-    test('It should return a document from mongo', () => {
+    test('It should return 200 and a document from mongo', () => {
       return mockDocument.createOne()
         .then(mockedDoc => {
           tempDoc = mockedDoc
@@ -50,7 +73,7 @@ describe('Testing Document router', () => {
 
   describe('Testing PUT /document/:id', () => {
     let tempDoc
-    test('It should return a document from mongo', () => {
+    test('It should return 200 and a document from mongo', () => {
       return mockDocument.createOne()
         .then(mockedDoc => {
           tempDoc = mockedDoc
@@ -66,11 +89,28 @@ describe('Testing Document router', () => {
           expect(gotDoc.body.body).toEqual(tempDoc.body)
         })
     })
+
+    test('It should return 400 bad request', () => {
+      return mockDocument.createOne()
+        .then(mockedDoc => {
+          tempDoc = mockedDoc
+          return superagent.put(`${API_URL}/document/${tempDoc._id}`)
+            .send({
+              _id: 'sdfasdfasd',
+            })
+        })
+        .then(res => {
+          throw res
+        })
+        .catch(err => {
+          expect(err.status).toEqual(400)
+        })
+    })
   })
 
   describe('Testing DELETE /document/:id', () => {
     let tempDoc
-    test('It should delete a document from mongo', () => {
+    test('It should return 204 and delete a document from mongo', () => {
       return mockDocument.createOne()
         .then(mockedDoc => {
           tempDoc = mockedDoc
@@ -79,6 +119,9 @@ describe('Testing Document router', () => {
         .then(res => {
           expect(res.status).toEqual(204)
           return superagent.get(`${API_URL}/document/${tempDoc._id}`)
+        })
+        .then(res => {
+          throw res
         })
         .catch(err => {
           expect(err.status).toEqual(404)
