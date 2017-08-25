@@ -54,7 +54,7 @@ describe('Testing Document router', () => {
     })
   })
 
-  describe('Testing GET /document:id', () => {
+  describe('Testing GET /document and /document/:id', () => {
     let tempDoc
     test('It should return 200 and a document from mongo', () => {
       return mockDocument.createOne()
