@@ -5,7 +5,7 @@ export default (err, req, res, next) => {
 
   err.message = err.message.toLowerCase()
 
-  if(err.message.includes('validation failed'))
+  if(err.message.includes('validation failed') || err.message.includes('cast to objectid'))
     return res.sendStatus(400)
 
   if(err.message.includes('duplicated key'))

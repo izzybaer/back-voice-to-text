@@ -1,9 +1,10 @@
 'use strict'
+require('dotenv').config()
 
 import cors from 'cors'
 // import io from './io.js'
 import morgan from 'morgan'
-import {Server} from 'http'
+// import {Server} from 'http'
 import express from 'express'
 import * as mongo from './mongo.js'
 
@@ -11,13 +12,14 @@ import documentRouter from '../routers/document.js'
 import four04 from '../middleware/4-0-4.js'
 import errorHandler from '../middleware/error-middleware.js'
 
+
 // import documentSubscriber from '../subscribers/document.js'
 
 const app = express()
 
 app.use(morgan('dev'))
 app.use(cors({
-  origin: process.env.CORS_ORIGINS.split(' '),
+  origin: process.env.CORS_ORIGINS,
   credentials: true,
 }))
 
@@ -28,7 +30,7 @@ app.use(errorHandler)
 
 const state = {
   isOn: false,
-  http: null,
+  http: app,
 }
 
 export const start = () =>
@@ -38,7 +40,7 @@ export const start = () =>
     state.isOn = true
     mongo.start()
       .then(() => {
-        state.http = Server(app)
+        // state.http = Server(app)
         // let subscribers = {...documentSubscriber}
         // io(state.http, subscribers)
 

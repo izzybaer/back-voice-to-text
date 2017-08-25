@@ -12,7 +12,8 @@
       "process.env": {
         "NODE_ENV": "testing"
       }
-    }
+    },
+    "testEnvironment": "node"
   },
   "scripts": {
     "lint": "eslint . --fix",
@@ -39,6 +40,7 @@
     "eslint": "^4.5.0",
     "express": "^4.15.4",
     "express-http-proxy": "^1.0.6",
+    "faker": "^4.1.0",
     "http-errors": "^1.6.2",
     "jest": "^20.0.4",
     "mongoose": "^4.11.7",
