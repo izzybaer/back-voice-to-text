@@ -69,6 +69,20 @@ describe('Testing Document router', () => {
           expect(gotDoc.body.body).toEqual(tempDoc.body)
         })
     })
+
+    test('It should return 200 and all the documents in mongo', () => {
+      return mockDocument.createMany(5)
+        .then(() => {
+          return superagent.get(`${API_URL}/document`)
+        })
+        .then(docs => {
+          expect(docs.body).toBeInstanceOf(Array)
+          expect(docs.body.length).toEqual(5)
+          expect(docs.body[2].title).toBeDefined()
+          expect(docs.body[2].description).toBeDefined()
+          expect(docs.body[2].body).toBeDefined()
+        })
+    })
   })
 
   describe('Testing PUT /document/:id', () => {
