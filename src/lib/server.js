@@ -40,8 +40,7 @@ export const start = () =>
     mongo.start()
       .then(() => {
         state.http = Server(app)
-        let subscribers = Object.assign({}, editSubscriber)
-        io(state.http, subscribers)
+        io(state.http, editSubscriber)
 
         state.http.listen(process.env.PORT, () => {
           console.log('__SERVER_UP__', process.env.API_URL)
