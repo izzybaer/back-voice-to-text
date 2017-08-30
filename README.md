@@ -1,2 +1,3 @@
-# back-voice-to-text
-Back end voice to text
+# Back end of voice to text
+
+This is a remake of my final project from Code Fellows
