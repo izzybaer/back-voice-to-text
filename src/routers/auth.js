@@ -24,7 +24,7 @@ authRouter.post('/auth', jsonParser, (req, res, next) => {
 })
 
 
-authRouter.get('/auth', basicAuth (req, res, next) => {
+authRouter.get('/auth', basicAuth, (req, res, next) => {
   req.user.tokenCreate()
     .then(token => {
       res.cookie('X-VtT-Token', token)
