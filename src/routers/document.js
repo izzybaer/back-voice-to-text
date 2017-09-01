@@ -1,15 +1,15 @@
 'use strict'
 
 import {Router} from 'express'
+import bodyParser from 'body-parser'
 
 import Document from '../models/document.js'
+import bearerAuth from '../middleware/bearer-auth.js'
 
-import bodyParser from 'body-parser'
 const jsonParser = bodyParser.json()
-
 const documentRouter = new Router()
 
-documentRouter.post('/document', jsonParser, (req, res, next) => {
+documentRouter.post('/document', bearerAuth, jsonParser, (req, res, next) => {
   let doc = req.body
   console.log('__LOG__ POST to /document')
   console.log('__LOG__ POST title', doc.title)
@@ -27,7 +27,7 @@ documentRouter.post('/document', jsonParser, (req, res, next) => {
 })
 
 
-documentRouter.get('/document/:id', (req, res, next) => {
+documentRouter.get('/document/:id', bearerAuth, (req, res, next) => {
   let docId = req.params.id
   console.log('__LOG__ GET document id', docId)
 
@@ -36,7 +36,7 @@ documentRouter.get('/document/:id', (req, res, next) => {
     .catch(next)
 })
 
-documentRouter.get('/document', (req, res, next) => {
+documentRouter.get('/document', bearerAuth, (req, res, next) => {
   console.log('__LOG__ GET all docs')
 
   Document.find({})
@@ -44,7 +44,7 @@ documentRouter.get('/document', (req, res, next) => {
     .catch(next)
 })
 
-documentRouter.put('/document/:id', jsonParser, (req, res, next) => {
+documentRouter.put('/document/:id', bearerAuth, jsonParser, (req, res, next) => {
   let docId = req.params.id
   let newDoc = req.body
   console.log('__LOG__ PUT document id', docId)
@@ -55,7 +55,7 @@ documentRouter.put('/document/:id', jsonParser, (req, res, next) => {
     .catch(next)
 })
 
-documentRouter.delete('/document/:id', (req, res, next) => {
+documentRouter.delete('/document/:id', bearerAuth, (req, res, next) => {
   let docId = req.params.id
   console.log('__LOG__ DELETE document id', docId)
 
