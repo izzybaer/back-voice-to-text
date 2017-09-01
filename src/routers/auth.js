@@ -1,36 +1,35 @@
 'use strict'
-
 import {Router} from 'express'
-
 import bodyParser from 'body-parser'
-const jsonParser = bodyParser.json()
+import basicAuth from '../middleware/basic-auth.js'
 
+import User from '../models/user.js'
+const jsonParser = bodyParser.json()
 const authRouter = new Router()
 
 authRouter.post('/auth', jsonParser, (req, res, next) => {
-  let doc = req.body
-  console.log('__LOG__ POST to /document')
-  console.log('__LOG__ POST title', doc.title)
-  console.log('__LOG__ POST description', doc.description)
-  console.log('__LOG__ POST body', doc.body)
+  let user = req.body
+  console.log('__LOG__ POST to /auth')
+  console.log('__LOG__ POST username', user.username)
+  console.log('__LOG__ POST displayName', user.displayName)
+  console.log('__LOG__ POST password', user.password)
 
-  new User({
-    username: doc.username,
-    displayName: doc.displayName,
-    password: doc.password,
-  })
-    .save()
-    .then(document => res.json(document))
+  new User.createFromSignup(user)
+    .then(user => user.tokenCreate())
+    .then(token => {
+      res.cookie('X-VtT-Token', token)
+      res.send(token)
+    })
     .catch(next)
 })
 
 
-authRouter.get('/auth', (req, res, next) => {
-  let docId = req.params.id
-  console.log('__LOG__ GET document id', docId)
-
-  Document.findById(docId)
-    .then(document => document ? res.json(document) : res.sendStatus(404))
+authRouter.get('/auth', basicAuth (req, res, next) => {
+  req.user.tokenCreate()
+    .then(token => {
+      res.cookie('X-VtT-Token', token)
+      res.send(token)
+    })
     .catch(next)
 })
 
