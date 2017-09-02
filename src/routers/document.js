@@ -3,6 +3,7 @@
 import {Router} from 'express'
 import bodyParser from 'body-parser'
 
+import User from '../models/user.js'
 import Document from '../models/document.js'
 import bearerAuth from '../middleware/bearer-auth.js'
 
@@ -16,14 +17,15 @@ documentRouter.post('/document', bearerAuth, jsonParser, (req, res, next) => {
   console.log('__LOG__ POST description', doc.description)
   console.log('__LOG__ POST body', doc.body)
 
-  new Document({
-    title: doc.title,
-    description: doc.description,
-    body: doc.body,
-  })
-    .save()
-    .then(document => res.json(document))
-    .catch(next)
+  User.fromToken(req.headers.authorization.split('Bearer ')[1])
+    .then(user => {
+      console.log('__LOG__ POST ownerId', user._id)
+      doc.ownerId = user._id
+      new Document(doc)
+        .save()
+        .then(document => res.json(document))
+        .catch(next)
+    })
 })
 
 
@@ -40,6 +42,7 @@ documentRouter.get('/document', bearerAuth, (req, res, next) => {
   console.log('__LOG__ GET all docs')
 
   Document.find({})
+    .sort({title: 'asc'})
     .then(documents => res.json(documents))
     .catch(next)
 })
