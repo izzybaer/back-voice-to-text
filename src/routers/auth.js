@@ -1,9 +1,12 @@
 'use strict'
 import {Router} from 'express'
 import bodyParser from 'body-parser'
-import basicAuth from '../middleware/basic-auth.js'
+import * as bcrypt from 'bcrypt'
 
 import User from '../models/user.js'
+import basicAuth from '../middleware/basic-auth.js'
+import bearerAuth from '../middleware/bearer-auth.js'
+
 const jsonParser = bodyParser.json()
 const authRouter = new Router()
 
@@ -34,6 +37,19 @@ authRouter.get('/auth', basicAuth, (req, res, next) => {
     .then(token => {
       res.cookie('X-VtT-Token', token)
       res.send(token)
+    })
+    .catch(next)
+})
+
+authRouter.post('/newPass', bearerAuth, jsonParser, (req, res, next) => {
+  User.fromToken(req.headers.authorization.split('Bearer ')[1])
+    .then(user => {
+      return user.passwordHashCompare(req.body.oldPassword)
+    })
+    .then(user => bcrypt.hash(req.body.newPassword, 1)
+      .then(passwordHash => User.findOneAndUpdate({username: user.username}, {passwordHash}, {runValidators: true, new: true})))
+    .then(user => {
+      res.sendStatus(200)
     })
     .catch(next)
 })
