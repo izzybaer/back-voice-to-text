@@ -14,6 +14,11 @@ authRouter.post('/auth', jsonParser, (req, res, next) => {
   console.log('__LOG__ POST displayName', user.displayName)
   console.log('__LOG__ POST password', user.password)
 
+  if(user.password.length < 8) {
+    console.error('__ERROR__ Password length is less than 8')
+    return res.sendStatus(400)
+  }
+
   new User.createFromSignup(user)
     .then(user => user.tokenCreate())
     .then(token => {
