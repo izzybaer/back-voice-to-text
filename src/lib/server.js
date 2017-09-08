@@ -9,6 +9,7 @@ import express from 'express'
 import * as mongo from './mongo.js'
 
 import documentRouter from '../routers/document.js'
+import authRouter from '../routers/auth.js'
 import four04 from '../middleware/4-0-4.js'
 import errorHandler from '../middleware/error-middleware.js'
 
@@ -23,6 +24,7 @@ app.use(cors({
 }))
 
 app.use(documentRouter)
+app.use(authRouter)
 
 app.use(four04)
 app.use(errorHandler)
