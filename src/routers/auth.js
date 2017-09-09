@@ -17,8 +17,16 @@ authRouter.post('/auth', jsonParser, (req, res, next) => {
   console.log('__LOG__ POST displayName', user.displayName)
   console.log('__LOG__ POST password', user.password)
 
+  if(!user.username || !user.displayName || !user.password) {
+    console.error('__WARNING__ Clientside validation bypassed: All fields are required (Register)')
+    return res.sendStatus(400)
+  }
+  if(!/^[\w]+$/.test(user.displayName)) {
+    console.error('__WARNING__ Clientside validation bypassed: Display Name has characters that aren\'t allowed (Register)')
+    return res.sendStatus(400)
+  }
   if(user.password.length < 8) {
-    console.error('__ERROR__ Password length is less than 8')
+    console.error('__WARNING__ Clientside validation bypassed: Password too short (Register)')
     return res.sendStatus(400)
   }
 
@@ -42,6 +50,15 @@ authRouter.get('/auth', basicAuth, (req, res, next) => {
 })
 
 authRouter.post('/newPass', bearerAuth, jsonParser, (req, res, next) => {
+  if(!req.body.oldPassword || !req.body.newPassword) {
+    console.error('__WARNING__ Clientside validation bypassed: All fields are required (Change Password)')
+    return res.sendStatus(400)
+  }
+  if(req.body.oldPassword.length < 8 || req.body.newPassword.length < 8) {
+    console.error('__WARNING__ Clientside validation bypassed: Password too short (Change Password)')
+    return res.sendStatus(400)
+  }
+
   User.fromToken(req.headers.authorization.split('Bearer ')[1])
     .then(user => {
       return user.passwordHashCompare(req.body.oldPassword)
