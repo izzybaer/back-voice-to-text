@@ -41,11 +41,6 @@ authRouter.post('/auth', jsonParser, (req, res, next) => {
 
 
 authRouter.get('/auth', basicAuth, (req, res, next) => {
-  if(!req.body.username || !req.body.password) {
-    console.error('__WARNING__ Clientside validation bypassed: All fields are required (Login)')
-    return res.sendStatus(400)
-  }
-
   req.user.tokenCreate()
     .then(token => {
       res.cookie('X-VtT-Token', token)
