@@ -45,9 +45,9 @@ userSchema.methods.tokenCreate = function (){
 const User = module.exports = mongoose.model('user', userSchema)
 
 User.createFromSignup = function(user){
-  if(!user.password || !user.displayName || !user.username)
+  if(!user.username || !user.displayName || !user.password)
     return Promise.reject(
-      createError(400, 'VALIDATION ERROR: missing username, displayName, or password'))
+      createError(400, '__WARNING__ Clientside validation bypassed: All fields are required (createFromSignup)'))
 
   let {password} = user
   user = Object.assign({}, user, {password: undefined})
