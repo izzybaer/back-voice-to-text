@@ -12,10 +12,7 @@ const authRouter = new Router()
 
 authRouter.post('/auth', jsonParser, (req, res, next) => {
   let user = req.body
-  console.log('__LOG__ POST to /auth')
-  console.log('__LOG__ POST username', user.username)
-  console.log('__LOG__ POST displayName', user.displayName)
-  console.log('__LOG__ POST password', user.password)
+  console.log('__LOG__ POST /auth register user', user)
 
   if(!user.username || !user.displayName || !user.password) {
     console.error('__WARNING__ Clientside validation bypassed: All fields are required (Register)')
@@ -41,6 +38,7 @@ authRouter.post('/auth', jsonParser, (req, res, next) => {
 
 
 authRouter.get('/auth', basicAuth, (req, res, next) => {
+  console.log('__LOG__ GET /auth login', req.body)
   req.user.tokenCreate()
     .then(token => {
       res.cookie('X-VtT-Token', token)
@@ -50,6 +48,7 @@ authRouter.get('/auth', basicAuth, (req, res, next) => {
 })
 
 authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
+  console.log('__LOG__ PUT /auth password change', req.body)
   if(!req.body.oldPassword || !req.body.newPassword) {
     console.error('__WARNING__ Clientside validation bypassed: All fields are required (Change Password)')
     return res.sendStatus(400)
@@ -60,15 +59,24 @@ authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
   }
 
   User.fromToken(req.headers.authorization.split('Bearer ')[1])
-    .then(user => {
-      return user.passwordHashCompare(req.body.oldPassword)
-    })
+    .then(user => user.passwordHashCompare(req.body.oldPassword))
     .then(user => bcrypt.hash(req.body.newPassword, 1)
       .then(passwordHash => User.findOneAndUpdate({username: user.username}, {passwordHash}, {runValidators: true, new: true})))
     .then(user => {
       res.sendStatus(200)
     })
     .catch(next)
+})
+
+authRouter.get('/verify/:id', (req, res, next) => {
+  let token = req.params.id
+  console.log('__LOG__ GET token verification', token)
+  if(!token)
+    return res.sendStatus(400)
+
+  User.fromToken(token)
+    .then(user => res.json(user))
+    .catch(() => res.sendStatus(401))
 })
 
 export default authRouter

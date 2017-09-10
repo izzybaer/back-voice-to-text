@@ -12,10 +12,7 @@ const documentRouter = new Router()
 
 documentRouter.post('/document', bearerAuth, jsonParser, (req, res, next) => {
   let doc = req.body
-  console.log('__LOG__ POST to /document')
-  console.log('__LOG__ POST title', doc.title)
-  console.log('__LOG__ POST description', doc.description)
-  console.log('__LOG__ POST body', doc.body)
+  console.log('__LOG__ POST /document new document', doc)
 
   User.fromToken(req.headers.authorization.split('Bearer ')[1])
     .then(user => {
@@ -31,7 +28,7 @@ documentRouter.post('/document', bearerAuth, jsonParser, (req, res, next) => {
 
 documentRouter.get('/document/:id', bearerAuth, (req, res, next) => {
   let docId = req.params.id
-  console.log('__LOG__ GET document id', docId)
+  console.log('__LOG__ GET /document/:id', docId)
 
   Document.findById(docId)
     .then(document => document ? res.json(document) : res.sendStatus(404))
@@ -39,7 +36,7 @@ documentRouter.get('/document/:id', bearerAuth, (req, res, next) => {
 })
 
 documentRouter.get('/document', bearerAuth, (req, res, next) => {
-  console.log('__LOG__ GET all docs')
+  console.log('__LOG__ GET /document all docs')
 
   Document.find({})
     .sort({title: 'asc'})
@@ -50,8 +47,8 @@ documentRouter.get('/document', bearerAuth, (req, res, next) => {
 documentRouter.put('/document/:id', bearerAuth, jsonParser, (req, res, next) => {
   let docId = req.params.id
   let newDoc = req.body
-  console.log('__LOG__ PUT document id', docId)
-  console.log('__LOG__ PUT new doc', newDoc)
+  console.log('__LOG__ PUT /document/:id id', docId)
+  console.log('__LOG__ PUT /document/:id new doc', newDoc)
 
   Document.findByIdAndUpdate(docId, req.body, {new: true, runValidators: true})
     .then(document => res.json(document))
@@ -60,7 +57,7 @@ documentRouter.put('/document/:id', bearerAuth, jsonParser, (req, res, next) => 
 
 documentRouter.delete('/document/:id', bearerAuth, (req, res, next) => {
   let docId = req.params.id
-  console.log('__LOG__ DELETE document id', docId)
+  console.log('__LOG__ DELETE /document/:id id', docId)
 
   Document.findByIdAndRemove(docId)
     .then(() => res.sendStatus(204))
