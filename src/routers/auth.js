@@ -49,7 +49,7 @@ authRouter.get('/auth', basicAuth, (req, res, next) => {
     .catch(next)
 })
 
-authRouter.post('/newPass', bearerAuth, jsonParser, (req, res, next) => {
+authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
   if(!req.body.oldPassword || !req.body.newPassword) {
     console.error('__WARNING__ Clientside validation bypassed: All fields are required (Change Password)')
     return res.sendStatus(400)
