@@ -29,6 +29,7 @@ describe('Testing Document router', () => {
   describe('Testing POST /document', () => {
     test('It should return 200 and the sent document from mongo', () => {
       return superagent.post(`${API_URL}/document`)
+        .withCredentials()
         .send({
           title: 'Mockument',
           description: 'Mockuscription. This one was not as cool',
