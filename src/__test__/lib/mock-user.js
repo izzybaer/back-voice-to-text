@@ -8,9 +8,9 @@ const mockUser = {}
 
 mockUser.createOne = () => {
   let testUser = {
-    username: faker.random.words(1),
-    displayName: faker.random.words(1),
-    password: faker.random.words(2),
+    username: faker.random.alphaNumeric(15),
+    displayName: faker.random.alphaNumeric(8),
+    password: faker.internet.password(),
   }
   return User.createFromSignup(testUser)
     .then(user => {
