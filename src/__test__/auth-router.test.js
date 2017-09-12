@@ -198,5 +198,40 @@ describe('Testing Auth router', () => {
             })
         )
     )
+
+    test('It should return 401 unauthorized - incorrect old password', () =>
+      mockUser.createOne()
+        .then(user =>
+          superagent.put(`${API_URL}/auth`)
+            .set('Authorization', `Bearer ${user.token}`)
+            .send({
+              oldPassword: 'notTheRightPassword',
+              newPassword: '00000000000000',
+            })
+            .then(res => {
+              throw res
+            })
+            .catch(err => {
+              expect(err.status).toEqual(401)
+            })
+        )
+    )
+
+    test('It should return 401 unauthorized - no auth header', () =>
+      mockUser.createOne()
+        .then(user =>
+          superagent.put(`${API_URL}/auth`)
+            .send({
+              oldPassword: 'notTheRightPassword',
+              newPassword: '00000000000000',
+            })
+            .then(res => {
+              throw res
+            })
+            .catch(err => {
+              expect(err.status).toEqual(401)
+            })
+        )
+    )
   })
 })
