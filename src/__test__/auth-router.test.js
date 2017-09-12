@@ -147,4 +147,56 @@ describe('Testing Auth router', () => {
         })
     })
   })
+
+  describe('Testing PUT /auth password change', () => {
+    test('It should return 200', () =>
+      mockUser.createOne()
+        .then(user =>
+          superagent.put(`${API_URL}/auth`)
+            .set('Authorization', `Bearer ${user.token}`)
+            .send({
+              oldPassword: user.password,
+              newPassword: '00000000',
+            })
+            .then(res => {
+              expect(res.status).toEqual(200)
+            })
+        )
+    )
+
+    test('It should return 400 bad request - missing field', () =>
+      mockUser.createOne()
+        .then(user =>
+          superagent.put(`${API_URL}/auth`)
+            .set('Authorization', `Bearer ${user.token}`)
+            .send({
+              newPassword: '00000000',
+            })
+            .then(res => {
+              throw res
+            })
+            .catch(err => {
+              expect(err.status).toEqual(400)
+            })
+        )
+    )
+
+    test('It should return 400 bad request - password too short', () =>
+      mockUser.createOne()
+        .then(user =>
+          superagent.put(`${API_URL}/auth`)
+            .set('Authorization', `Bearer ${user.token}`)
+            .send({
+              oldPassword: user.password,
+              newPassword: '12345',
+            })
+            .then(res => {
+              throw res
+            })
+            .catch(err => {
+              expect(err.status).toEqual(400)
+            })
+        )
+    )
+  })
 })
