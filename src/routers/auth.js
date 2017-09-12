@@ -71,8 +71,6 @@ authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
 authRouter.get('/verify/:id', (req, res, next) => {
   let token = req.params.id
   console.log('__LOG__ GET token verification', token)
-  if(!token)
-    return res.sendStatus(400)
 
   User.fromToken(token)
     .then(user => res.json(user))

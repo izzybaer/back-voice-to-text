@@ -11,10 +11,10 @@ export default (err, req, res, next) => {
   if(err.message.includes('duplicated key'))
     return res.sendStatus(409)
 
-  if(err.message.includes('objectid failed'))
+  if(err.message.includes('objectid failed') || err.message.includes('is an invalid route'))
     return res.sendStatus(404)
 
-  if(err.message.includes('unauthorized'))
+  if(err.message.includes('unauthorized') || err.message.includes('no authorization header'))
     return res.sendStatus(401)
 
   return res.sendStatus(500)
