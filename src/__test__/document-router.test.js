@@ -61,6 +61,21 @@ describe('Testing Document router', () => {
             })
         )
     )
+
+    test('It should return 401 unauthorized', () =>
+      superagent.post(`${API_URL}/document`)
+        .send({
+          title: 'title',
+          description: 'description',
+          body: 'body',
+        })
+        .then(res => {
+          throw res
+        })
+        .catch(err => {
+          expect(err.status).toEqual(401)
+        })
+    )
   })
 
   describe('Testing GET /document and /document/:id', () => {
@@ -97,6 +112,16 @@ describe('Testing Document router', () => {
               expect(docs.body[2].body).toBeDefined()
             })
         )
+    )
+
+    test('It should return 401 unauthorized', () =>
+      superagent.get(`${API_URL}/document/asdasdasd`)
+        .then(res => {
+          throw res
+        })
+        .catch(err => {
+          expect(err.status).toEqual(401)
+        })
     )
   })
 
@@ -144,6 +169,20 @@ describe('Testing Document router', () => {
             })
         )
     )
+
+    test('It should return 401 unauthorized', () =>
+      superagent.put(`${API_URL}/document/sdfgsdfgsdfg`)
+        .send({
+          title: 'new title',
+          description: 'new description',
+        })
+        .then(res => {
+          throw res
+        })
+        .catch(err => {
+          expect(err.status).toEqual(401)
+        })
+    )
   })
 
   describe('Testing DELETE /document/:id', () => {
@@ -169,6 +208,16 @@ describe('Testing Document router', () => {
               expect(err.status).toEqual(404)
             })
         )
+    )
+
+    test('It should return 401 unauthorized', () =>
+      superagent.delete(`${API_URL}/document/asdasdasdasd`)
+        .then(res => {
+          throw res
+        })
+        .catch(err => {
+          expect(err.status).toEqual(401)
+        })
     )
   })
 })
