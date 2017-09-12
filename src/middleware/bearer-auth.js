@@ -9,8 +9,10 @@ export default(req, res, next) => {
     return next(createError(401, 'AUTH ERROR: no authorization header'))
 
   let token = authorization.split('Bearer ')[1]
-  if(!token)
+  if(!token) {
+    console.log('__WARNING__ Clientside validation bypassed: Bearer authorization header has been tampered with')
     return next(createError(401, 'AUTH ERROR: not bearer auth'))
+  }
 
   promisify(jwt.verify)(token, process.env.SECRET)
     .then(({randomHash}) => User.findOne({randomHash}))

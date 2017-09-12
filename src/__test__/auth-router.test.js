@@ -94,5 +94,57 @@ describe('Testing Auth router', () => {
           expect(res.text).toBeDefined()
         })
     )
+
+    test('It should return 401 unauthorized - no auth header', () =>
+      superagent.get(`${API_URL}/auth`)
+        .then(res => {
+          throw res
+        })
+        .catch(err => {
+          expect(err.status).toEqual(401)
+        })
+    )
+
+    test('It should return 401 unauthorized - not basic auth', () =>
+      mockUser.createOne()
+        .then(user => {
+          let basic = btoa(`${user.username}:${user.password}`)
+          return superagent.get(`${API_URL}/auth`)
+            .set('Authorization', `Advanced ${basic}`)
+        })
+        .then(res => {
+          throw res
+        })
+        .catch(err => {
+          expect(err.status).toEqual(401)
+        })
+    )
+
+    test('It should return 401 unauthorized - missing field', () =>
+      mockUser.createOne()
+        .then(user => {
+          let basic = btoa(`${user.password}`)
+          return superagent.get(`${API_URL}/auth`)
+            .set('Authorization', `Basic ${basic}`)
+        })
+        .then(res => {
+          throw res
+        })
+        .catch(err => {
+          expect(err.status).toEqual(401)
+        })
+    )
+
+    test('It should return 401 unauthorized - user not found', () => {
+      let basic = btoa('fakeuser:password')
+      return superagent.get(`${API_URL}/auth`)
+        .set('Authorization', `Basic ${basic}`)
+        .then(res => {
+          throw res
+        })
+        .catch(err => {
+          expect(err.status).toEqual(401)
+        })
+    })
   })
 })
