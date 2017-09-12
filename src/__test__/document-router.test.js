@@ -4,6 +4,7 @@ import superagent from 'superagent'
 
 import cleanDB from './lib/clean-db.js'
 import mockDocument from './lib/mock-document.js'
+import mockUser from './lib/mock-user.js'
 import * as server from '../lib/server.js'
 
 const API_URL = process.env.API_URL
@@ -28,19 +29,22 @@ describe('Testing Document router', () => {
 
   describe('Testing POST /document', () => {
     test('It should return 200 and the sent document from mongo', () => {
-      return superagent.post(`${API_URL}/document`)
-        .withCredentials()
-        .send({
-          title: 'Mockument',
-          description: 'Mockuscription. This one was not as cool',
-          body: 'Here is me talking to a class during a lecture and stuff',
-        })
-        .then(document => {
-          expect(document.body._id).toBeDefined()
-          expect(document.body.title).toEqual('Mockument')
-          expect(document.body.description).toEqual('Mockuscription. This one was not as cool')
-          expect(document.body.body).toEqual('Here is me talking to a class during a lecture and stuff')
-        })
+      mockUser.createOne()
+        .then(user =>
+          superagent.post(`${API_URL}/document`)
+            .set('Authorization', `Bearer ${user.token}`)
+            .send({
+              title: 'Mockument',
+              description: 'Mockuscription. This one was not as cool',
+              body: 'Here is me talking to a class during a lecture and stuff',
+            })
+            .then(document => {
+              expect(document.body._id).toBeDefined()
+              expect(document.body.ownerId).toEqual(user._id.toString())
+              expect(document.body.title).toEqual('Mockument')
+              expect(document.body.description).toEqual('Mockuscription. This one was not as cool')
+              expect(document.body.body).toEqual('Here is me talking to a class during a lecture and stuff')
+            }))
     })
 
     test('It should return 400 bad request', () => {
