@@ -1,6 +1,6 @@
 import {randomBytes} from 'crypto'
 import createError from 'http-errors'
-import promisify from '../lib/promisify.js'
+import * as util from '../lib/util.js'
 import * as bcrypt from 'bcrypt'
 import * as jwt from 'jsonwebtoken'
 import mongoose from 'mongoose'
@@ -60,7 +60,7 @@ User.createFromSignup = function(user){
 }
 
 User.fromToken = function(token){
-  return promisify(jwt.verify)(token, process.env.SECRET)
+  return util.promisify(jwt.verify)(token, process.env.SECRET)
     .then(({tokenSeed}) => User.findOne({tokenSeed}))
     .then((user) => {
       if(!user)

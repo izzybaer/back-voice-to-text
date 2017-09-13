@@ -1,7 +1,7 @@
 import * as jwt from 'jsonwebtoken'
 import User from '../models/user.js'
 import createError from 'http-errors'
-import promisify from '../lib/promisify.js'
+import * as util from '../lib/util.js'
 
 export default (req, res, next) => {
   let {authorization} = req.headers
@@ -14,7 +14,7 @@ export default (req, res, next) => {
     return next(createError(401, 'AUTH ERROR: not bearer auth'))
   }
 
-  promisify(jwt.verify)(token, process.env.SECRET)
+  util.promisify(jwt.verify)(token, process.env.SECRET)
     .then(({randomHash}) => User.findOne({randomHash}))
     .then((user) => {
       if(!user)
