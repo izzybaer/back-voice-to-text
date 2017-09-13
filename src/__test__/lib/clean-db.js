@@ -3,6 +3,6 @@ import User from '../../models/user.js'
 
 export default () =>
   Promise.all([
-    Document.remove({}),
     User.remove({}),
+    Document.remove({}),
   ])

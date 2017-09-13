@@ -1,5 +1,3 @@
-require('dotenv').config()
-
 import cors from 'cors'
 import io from './io.js'
 import morgan from 'morgan'

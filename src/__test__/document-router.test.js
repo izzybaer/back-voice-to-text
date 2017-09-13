@@ -1,4 +1,5 @@
-require('dotenv').config({path: `${__dirname}/../.test.env`})
+import dotenv from 'dotenv'
+dotenv.config({path: `.test.env`})
 
 import superagent from 'superagent'
 
