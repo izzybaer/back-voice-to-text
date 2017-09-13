@@ -1,5 +1,3 @@
-'use strict'
-
 import faker from 'faker'
 
 import Document from '../../models/document.js'

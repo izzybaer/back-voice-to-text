@@ -47,7 +47,7 @@ const User = module.exports = mongoose.model('user', userSchema)
 User.createFromSignup = function(user){
   if(!user.username || !user.displayName || !user.password)
     return Promise.reject(
-      createError(400, '__WARNING__ Clientside validation bypassed: All fields are required (createFromSignup)'))
+      createError(400, '__SECURITY_WARNING__ Clientside validation bypassed: All fields are required (createFromSignup)'))
 
   let {password} = user
   user = Object.assign({}, user, {password: undefined})

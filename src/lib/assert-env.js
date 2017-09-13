@@ -1,4 +1,3 @@
-
 let required = [
   'PORT',
   'SECRET',
