@@ -31,5 +31,5 @@ export default (req, res, next) => {
       req.user = user
       next()
     })
-    .catch(err => createError(401, err))
+    .catch(next)
 }

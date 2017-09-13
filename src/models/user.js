@@ -72,3 +72,5 @@ User.fromToken = token =>
         throw createError(401, '__AUTH_ERROR__ User not found (User.fromToken)')
       return user
     })
+
+export default User

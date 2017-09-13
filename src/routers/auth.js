@@ -37,7 +37,7 @@ authRouter.post('/auth', jsonParser, (req, res, next) => {
 
 
 authRouter.get('/auth', basicAuth, (req, res, next) => {
-  console.log('__LOG__ GET /auth login', req.body)
+  console.log('__LOG__ GET /auth login')
   req.user.tokenCreate()
     .then(token => {
       res.cookie('X-VtT-Token', token)

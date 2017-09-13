@@ -121,8 +121,9 @@ describe('Testing Auth router', () => {
 
     test('It should return 401 unauthorized - missing field', () =>
       mockUser.createOne()
-        .then(user => superagent.get(`${API_URL}/auth`)
-          .set('Authorization', `Basic ${util.btoa(user.password)}`))
+        .then(user =>
+          superagent.get(`${API_URL}/auth`)
+            .set('Authorization', `Basic ${util.btoa(user.password)}`))
         .then(res => {
           throw res
         })
