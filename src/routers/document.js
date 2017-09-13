@@ -14,7 +14,7 @@ documentRouter.post('/document', bearerAuth, jsonParser, (req, res, next) => {
 
   User.fromToken(req.headers.authorization.split('Bearer ')[1])
     .then(user => {
-      console.log('__LOG__ POST ownerId', user._id)
+      console.log('__LOG__ POST /document ownerId', user._id)
       doc.ownerId = user._id
       new Document(doc)
         .save()
@@ -45,7 +45,7 @@ documentRouter.get('/document', bearerAuth, (req, res, next) => {
 documentRouter.put('/document/:id', bearerAuth, jsonParser, (req, res, next) => {
   let docId = req.params.id
   let newDoc = req.body
-  console.log('__LOG__ PUT /document/:id id', docId)
+  console.log('__LOG__ PUT /document/:id', docId)
   console.log('__LOG__ PUT /document/:id new doc', newDoc)
 
   Document.findByIdAndUpdate(docId, req.body, {new: true, runValidators: true})
