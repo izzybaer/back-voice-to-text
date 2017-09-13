@@ -1,5 +1,5 @@
 import cors from 'cors'
-import io from './io.js'
+// import io from './io.js'
 import morgan from 'morgan'
 import {Server} from 'http'
 import express from 'express'
@@ -10,7 +10,7 @@ import authRouter from '../routers/auth.js'
 import four04 from '../middleware/4-0-4.js'
 import errorHandler from '../middleware/error-middleware.js'
 
-import editSubscriber from '../subscribers/edit.js'
+// import editSubscriber from '../subscribers/edit.js'
 
 const app = express()
 
@@ -39,7 +39,7 @@ export const start = () =>
     mongo.start()
       .then(() => {
         state.http = Server(app)
-        io(state.http, editSubscriber)
+        // io(state.http, editSubscriber)
 
         state.http.listen(process.env.PORT, () => {
           console.log('__SERVER_UP__', process.env.API_URL)
