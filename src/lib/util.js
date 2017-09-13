@@ -10,3 +10,6 @@ export const promisify = fn => (...args) =>
 export const securityWarning = (message, location) => {
 
 }
+
+export const btoa = text =>
+  new Buffer(text.toString(), 'binary').toString('base64')

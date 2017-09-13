@@ -24,7 +24,8 @@ describe('Testing Document router', () => {
         })
         .catch(err => {
           expect(err.status).toEqual(404)
-        }))
+        })
+    )
   })
 
   describe('Testing POST /document', () => {
@@ -48,7 +49,7 @@ describe('Testing Document router', () => {
         )
     )
 
-    test('It should return 400 bad request', () =>
+    test('It should return 400 bad request - fields missing', () =>
       mockUser.createOne()
         .then(user =>
           superagent.post(`${API_URL}/document`)
@@ -63,7 +64,7 @@ describe('Testing Document router', () => {
         )
     )
 
-    test('It should return 401 unauthorized', () =>
+    test('It should return 401 unauthorized - no auth header', () =>
       superagent.post(`${API_URL}/document`)
         .send({
           title: 'title',
@@ -80,23 +81,22 @@ describe('Testing Document router', () => {
   })
 
   describe('Testing GET /document and /document/:id', () => {
-    let tempDoc
     test('It should return 200 and a document from mongo', () =>
       mockUser.createOne()
         .then(user =>
           mockDocument.createOne(user._id)
-            .then(mockedDoc => {
-              tempDoc = mockedDoc
-              return superagent.get(`${API_URL}/document/${tempDoc._id}`)
+            .then(mockedDoc =>
+              superagent.get(`${API_URL}/document/${mockedDoc._id}`)
                 .set('Authorization', `Bearer ${user.token}`)
-            })
-            .then(gotDoc => {
-              expect(gotDoc.body._id).toEqual(tempDoc._id.toString())
-              expect(gotDoc.body.title).toEqual(tempDoc.title)
-              expect(gotDoc.body.description).toEqual(tempDoc.description)
-              expect(gotDoc.body.body).toEqual(tempDoc.body)
-            })
-        ))
+                .then(gotDoc => {
+                  expect(gotDoc.body._id).toEqual(mockedDoc._id.toString())
+                  expect(gotDoc.body.title).toEqual(mockedDoc.title)
+                  expect(gotDoc.body.description).toEqual(mockedDoc.description)
+                  expect(gotDoc.body.body).toEqual(mockedDoc.body)
+                })
+            )
+        )
+    )
 
     test('It should return 200 and all the documents in mongo', () =>
       mockUser.createOne()
@@ -104,18 +104,19 @@ describe('Testing Document router', () => {
           mockDocument.createMany(5, user._id)
             .then(() =>
               superagent.get(`${API_URL}/document`)
-                .set('Authorization', `Bearer ${user.token}`))
-            .then(docs => {
-              expect(docs.body).toBeInstanceOf(Array)
-              expect(docs.body.length).toEqual(5)
-              expect(docs.body[2].title).toBeDefined()
-              expect(docs.body[2].description).toBeDefined()
-              expect(docs.body[2].body).toBeDefined()
-            })
+                .set('Authorization', `Bearer ${user.token}`)
+                .then(docs => {
+                  expect(docs.body).toBeInstanceOf(Array)
+                  expect(docs.body.length).toEqual(5)
+                  expect(docs.body[2].title).toBeDefined()
+                  expect(docs.body[2].description).toBeDefined()
+                  expect(docs.body[2].body).toBeDefined()
+                })
+            )
         )
     )
 
-    test('It should return 401 unauthorized', () =>
+    test('It should return 401 unauthorized - no auth header', () =>
       superagent.get(`${API_URL}/document/asdasdasd`)
         .then(res => {
           throw res
@@ -127,51 +128,48 @@ describe('Testing Document router', () => {
   })
 
   describe('Testing PUT /document/:id', () => {
-    let tempDoc
     test('It should return 200 and a document from mongo', () =>
       mockUser.createOne()
         .then(user =>
           mockDocument.createOne(user._id)
-            .then(mockedDoc => {
-              tempDoc = mockedDoc
-              return superagent.put(`${API_URL}/document/${tempDoc._id}`)
+            .then(mockedDoc =>
+              superagent.put(`${API_URL}/document/${mockedDoc._id}`)
                 .set('Authorization', `Bearer ${user.token}`)
                 .send({
                   title: 'new title',
                 })
-            })
-            .then(gotDoc => {
-              expect(gotDoc.body._id).toEqual(tempDoc._id.toString())
-              expect(gotDoc.body.ownerId).toEqual(user._id.toString())
-              expect(gotDoc.body.title).toEqual('new title')
-              expect(gotDoc.body.description).toEqual(tempDoc.description)
-              expect(gotDoc.body.body).toEqual(tempDoc.body)
-            })
+                .then(gotDoc => {
+                  expect(gotDoc.body._id).toEqual(mockedDoc._id.toString())
+                  expect(gotDoc.body.ownerId).toEqual(user._id.toString())
+                  expect(gotDoc.body.title).toEqual('new title')
+                  expect(gotDoc.body.description).toEqual(mockedDoc.description)
+                  expect(gotDoc.body.body).toEqual(mockedDoc.body)
+                })
+            )
         )
     )
 
-    test('It should return 400 bad request', () =>
+    test('It should return 400 bad request - attempting to change _id', () =>
       mockUser.createOne()
         .then(user =>
           mockDocument.createOne(user._id)
-            .then(mockedDoc => {
-              tempDoc = mockedDoc
-              return superagent.put(`${API_URL}/document/${tempDoc._id}`)
+            .then(mockedDoc =>
+              superagent.put(`${API_URL}/document/${mockedDoc._id}`)
                 .set('Authorization', `Bearer ${user.token}`)
                 .send({
                   _id: 'sdfasdfasd',
                 })
-            })
-            .then(res => {
-              throw res
-            })
-            .catch(err => {
-              expect(err.status).toEqual(400)
-            })
+                .then(res => {
+                  throw res
+                })
+                .catch(err => {
+                  expect(err.status).toEqual(400)
+                })
+            )
         )
     )
 
-    test('It should return 401 unauthorized', () =>
+    test('It should return 401 unauthorized - no auth header', () =>
       superagent.put(`${API_URL}/document/sdfgsdfgsdfg`)
         .send({
           title: 'new title',
@@ -187,31 +185,29 @@ describe('Testing Document router', () => {
   })
 
   describe('Testing DELETE /document/:id', () => {
-    let tempDoc
     test('It should return 204 and delete a document from mongo', () =>
       mockUser.createOne()
         .then(user =>
           mockDocument.createOne(user._id)
-            .then(mockedDoc => {
-              tempDoc = mockedDoc
-              return superagent.delete(`${API_URL}/document/${tempDoc._id}`)
+            .then(mockedDoc =>
+              superagent.delete(`${API_URL}/document/${mockedDoc._id}`)
                 .set('Authorization', `Bearer ${user.token}`)
-            })
-            .then(res => {
-              expect(res.status).toEqual(204)
-              return superagent.get(`${API_URL}/document/${tempDoc._id}`)
-                .set('Authorization', `Bearer ${user.token}`)
-            })
-            .then(res => {
-              throw res
-            })
-            .catch(err => {
-              expect(err.status).toEqual(404)
-            })
+                .then(res => {
+                  expect(res.status).toEqual(204)
+                  return superagent.get(`${API_URL}/document/${mockedDoc._id}`)
+                    .set('Authorization', `Bearer ${user.token}`)
+                })
+                .then(res => {
+                  throw res
+                })
+                .catch(err => {
+                  expect(err.status).toEqual(404)
+                })
+            )
         )
     )
 
-    test('It should return 401 unauthorized', () =>
+    test('It should return 401 unauthorized - no auth header', () =>
       superagent.delete(`${API_URL}/document/asdasdasdasd`)
         .then(res => {
           throw res
