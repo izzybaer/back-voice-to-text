@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+  - '7'
+services:
+  - mongodb
+env:
+  - CXX=g++-4.8 MONGODB_URI='mongodb://localhost/travis' PORT=6000 NODE_ENV='test' SECRET='travis yml secret' API_URL='http://localhost:6000' CLIENT_URL='http://localhost:8080' CORS_ORIGINS='http://localhost:8080'
+sudo: required
+before_script: npm i
+script:
+  - npm test
+  - npm run lint
+notifications:
+  email: false
