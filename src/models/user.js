@@ -1,18 +1,19 @@
+import mongoose from 'mongoose'
 import {randomBytes} from 'crypto'
 import createError from 'http-errors'
-import promisify from '../lib/promisify.js'
-import * as bcrypt from 'bcrypt'
 import * as jwt from 'jsonwebtoken'
-import mongoose from 'mongoose'
+import * as bcrypt from 'bcrypt'
+
+import * as util from '../lib/util.js'
 
 const userSchema = new mongoose.Schema({
-  passwordHash: {type: String},
   username: {type: String, required: true, unique: true},
   displayName: {type: String, required: true, unique: true},
+  passwordHash: {type: String},
   tokenSeed: {type: String, default: ''},
 })
 
-userSchema.methods.passwordHashCreate = function(password){
+userSchema.methods.passwordHashCreate = function(password) {
   console.log('passwordHashCreate', password)
   return bcrypt.hash(password, 8)
     .then(hash => {
@@ -21,50 +22,56 @@ userSchema.methods.passwordHashCreate = function(password){
     })
 }
 
-userSchema.methods.passwordHashCompare = function(password){
+userSchema.methods.passwordHashCompare = function(password) {
   console.log('passwordHashCompare', password)
   return bcrypt.compare(password, this.passwordHash)
     .then(success => {
       if(!success)
-        throw createError(401, 'AUTH ERROR: wrong password')
+        throw createError(401, '__AUTH_ERROR__ Wrong password (userSchema.methods.passwordHashCompare)')
       return this
     })
 }
 
-userSchema.methods.tokenCreate = function (){
+userSchema.methods.tokenCreate = function() {
   this.tokenSeed = randomBytes(32).toString('base64')
   return this.save()
-    .then(user => {
-      return jwt.sign({tokenSeed: this.tokenSeed}, process.env.SECRET)
-    })
-    .then(token => {
-      return token
-    })
+    .then(user => jwt.sign({tokenSeed: this.tokenSeed}, process.env.SECRET))
+    .then(token => token)
 }
 
-const User = module.exports = mongoose.model('user', userSchema)
+const User = mongoose.model('user', userSchema)
 
-User.createFromSignup = function(user){
-  if(!user.username || !user.displayName || !user.password)
+User.createFromSignup = user => {
+  if(!user.username || !user.displayName || !user.password) {
+    util.securityWarning('Clientside validation bypassed', 'A field is missing', user, 'User.createFromSignup')
     return Promise.reject(
-      createError(400, '__WARNING__ Clientside validation bypassed: All fields are required (createFromSignup)'))
+      createError(400, '__AUTH_ERROR__ Missing fields for new user (User.createFromSignup)'))
+  }
 
   let {password} = user
-  user = Object.assign({}, user, {password: undefined})
+  user = {
+    ...user,
+    password: undefined, // remove password from user to be replaced by passwordHash
+  }
 
   return bcrypt.hash(password, 1)
     .then(passwordHash => {
-      let data = Object.assign({}, user, {passwordHash})
+      let data = {
+        ...user,
+        passwordHash,
+      }
       return new User(data).save()
     })
 }
 
-User.fromToken = function(token){
-  return promisify(jwt.verify)(token, process.env.SECRET)
+// Find the user data based on a bearer token
+User.fromToken = token =>
+  util.promisify(jwt.verify)(token, process.env.SECRET)
     .then(({tokenSeed}) => User.findOne({tokenSeed}))
-    .then((user) => {
+    .then(user => {
       if(!user)
-        throw createError(401, 'AUTH ERROR: user not found')
+        throw createError(401, '__AUTH_ERROR__ User not found (User.fromToken)')
       return user
     })
-}
+
+export default User

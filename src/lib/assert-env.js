@@ -1,4 +1,4 @@
-
+// Confirm that all necassary environment variables have been set
 let required = [
   'PORT',
   'SECRET',
@@ -12,9 +12,9 @@ let required = [
 try {
   required.forEach(key => {
     if(!process.env[key])
-      throw new Error(`ENVIRONMENT ERROR: voice-to-text backend requires process.env.${key} to be set`)
+      throw new Error(`__ENVIRONMENT_ERROR__ voice-to-text backend requires process.env.${key} to be set`)
   })
-} catch (e) {
-  console.error(e.message)
+} catch (error) {
+  console.error(error.message)
   process.exit(1)
 }

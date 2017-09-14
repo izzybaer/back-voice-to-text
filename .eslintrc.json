@@ -17,7 +17,11 @@
   },
   "extends": "eslint:recommended",
   "parserOptions": {
-    "sourceType": "module"
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true,
+      "module": true
+    }
   },
   "rules": {
     "no-console": "off",

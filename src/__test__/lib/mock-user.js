@@ -1,11 +1,10 @@
-'use strict'
-
 import faker from 'faker'
 
 import User from '../../models/user.js'
 
 const mockUser = {}
 
+// Add a random user to the test DB, return the user along with the DB _id and the given session token
 mockUser.createOne = () => {
   let testUser = {
     username: faker.random.alphaNumeric(15),

@@ -1,16 +1,15 @@
-require('dotenv').config({path: `${__dirname}/../.test.env`})
+import dotenv from 'dotenv'
+dotenv.config({path: `.test.env`})
 
 import superagent from 'superagent'
 
 import cleanDB from './lib/clean-db.js'
 import User from '../models/user.js'
 import mockUser from './lib/mock-user.js'
+import * as util from '../lib/util.js'
 import * as server from '../lib/server.js'
 
 const API_URL = process.env.API_URL
-
-const btoa = text =>
-  new Buffer(text.toString(), 'binary').toString('base64')
 
 describe('Testing Auth router', () => {
 
@@ -85,7 +84,7 @@ describe('Testing Auth router', () => {
     test('It should return 200 and a token', () =>
       mockUser.createOne()
         .then(user => {
-          let basic = btoa(`${user.username}:${user.password}`)
+          let basic = util.btoa(`${user.username}:${user.password}`)
           return superagent.get(`${API_URL}/auth`)
             .set('Authorization', `Basic ${basic}`)
         })
@@ -108,7 +107,7 @@ describe('Testing Auth router', () => {
     test('It should return 401 unauthorized - not basic auth', () =>
       mockUser.createOne()
         .then(user => {
-          let basic = btoa(`${user.username}:${user.password}`)
+          let basic = util.btoa(`${user.username}:${user.password}`)
           return superagent.get(`${API_URL}/auth`)
             .set('Authorization', `Advanced ${basic}`)
         })
@@ -122,11 +121,9 @@ describe('Testing Auth router', () => {
 
     test('It should return 401 unauthorized - missing field', () =>
       mockUser.createOne()
-        .then(user => {
-          let basic = btoa(`${user.password}`)
-          return superagent.get(`${API_URL}/auth`)
-            .set('Authorization', `Basic ${basic}`)
-        })
+        .then(user =>
+          superagent.get(`${API_URL}/auth`)
+            .set('Authorization', `Basic ${util.btoa(user.password)}`))
         .then(res => {
           throw res
         })
@@ -135,17 +132,16 @@ describe('Testing Auth router', () => {
         })
     )
 
-    test('It should return 401 unauthorized - user not found', () => {
-      let basic = btoa('fakeuser:password')
-      return superagent.get(`${API_URL}/auth`)
-        .set('Authorization', `Basic ${basic}`)
+    test('It should return 401 unauthorized - user not found', () =>
+      superagent.get(`${API_URL}/auth`)
+        .set('Authorization', `Basic ${util.btoa('fakeuser:password')}`)
         .then(res => {
           throw res
         })
         .catch(err => {
           expect(err.status).toEqual(401)
         })
-    })
+    )
   })
 
   describe('Testing PUT /auth password change', () => {
@@ -238,14 +234,14 @@ describe('Testing Auth router', () => {
   describe('Testing GET /verify/:id token verify', () => {
     test('It should return 200 and the user belonging to the token', () =>
       mockUser.createOne()
-        .then(user => {
+        .then(user =>
           superagent.get(`${API_URL}/verify/${user.token}`)
             .then(res => {
               expect(res.status).toEqual(200)
               expect(res.body.username).toEqual(user.username)
               expect(res.body.displayName).toEqual(user.displayName)
             })
-        })
+        )
     )
 
     test('It should return 401 unauthorized - bad token', () =>

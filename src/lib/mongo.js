@@ -1,7 +1,5 @@
-'use strict'
-
 import mongoose from 'mongoose'
-mongoose.Promise = Promise
+mongoose.Promise = Promise // Fix the built in mongo promise to match the new javascript one
 
 const state = {
   isOn: false,
@@ -13,17 +11,17 @@ const state = {
 
 export const start = () => {
   if(state.isOn)
-    return Promise.reject(new Error('ERROR: Database is already running'))
+    return Promise.reject(new Error('__MONGO_ERROR__ Database is already running'))
   return mongoose.connect(process.env.MONGODB_URI, state.config)
     .then(() => {
-      console.log('__MONGO_CONNECTED__', process.env.MONGODB_URI)
       state.isOn = true
+      console.log('__MONGO_CONNECTED__', process.env.MONGODB_URI)
     })
 }
 
 export const stop = () => {
   if(!state.isOn)
-    return Promise.reject(new Error('ERROR: Database is already off'))
+    return Promise.reject(new Error('__MONGO_ERROR__ Database is already off'))
   return mongoose.disconnect()
     .then(() => {
       state.isOn = false
