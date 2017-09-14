@@ -10,14 +10,14 @@ export default (req, res, next) => {
 
   let encoded = authorization.split('Basic ')[1]
   if(!encoded) {
-    console.error('__SECURITY_WARNING__ Clientside validation bypassed: Basic authorization header has been tampered with (basicAuth)')
+    util.securityWarning('Clientside validation bypassed', 'Basic authorization header has been tampered with', authorization, 'basicAuth')
     return next(createError(401, '__AUTH_ERROR__ Not basic auth (basicAuth)'))
   }
 
   let decoded = new Buffer(encoded, 'base64').toString()
   let [username, password] = decoded.split(':')
   if(!username || !password) {
-    console.error('__SECURITY_WARNING__ Clientside validation bypassed: Username or password was missing from login request (basicAuth)')
+    util.securityWarning('Clientside validation bypassed', 'Username or password was missing from login request', decoded, 'basicAuth')
     return next(createError(401, '__AUTH_ERROR__ Username or password missing (basicAuth)'))
   }
 

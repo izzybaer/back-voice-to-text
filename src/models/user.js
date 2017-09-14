@@ -43,7 +43,7 @@ const User = mongoose.model('user', userSchema)
 
 User.createFromSignup = user => {
   if(!user.username || !user.displayName || !user.password) {
-    console.error('__SECURITY_WARNING__ Clientside validation bypassed: All fields are required (User.createFromSignup)')
+    util.securityWarning('Clientside validation bypassed', 'A field is missing', user, 'User.createFromSignup')
     return Promise.reject(
       createError(400, '__AUTH_ERROR__ Missing fields for new user (User.createFromSignup)'))
   }

@@ -11,7 +11,7 @@ export default (req, res, next) => {
 
   let token = authorization.split('Bearer ')[1]
   if(!token) {
-    console.error('__SECURITY_WARNING__ Clientside validation bypassed: Bearer authorization header has been tampered with (bearerAuth)')
+    util.securityWarning('Clientside validation bypassed', 'Bearer authorization header has been tampered with', authorization, 'bearerAuth')
     return next(createError(401, '__AUTH_ERROR__ Not bearer auth (bearerAuth)'))
   }
 
