@@ -51,7 +51,7 @@ User.createFromSignup = user => {
   let {password} = user
   user = {
     ...user,
-    password: undefined,
+    password: undefined, // remove password from user to be replaced by passwordHash
   }
 
   return bcrypt.hash(password, 1)
@@ -64,6 +64,7 @@ User.createFromSignup = user => {
     })
 }
 
+// Find the user data based on a bearer token
 User.fromToken = token =>
   util.promisify(jwt.verify)(token, process.env.SECRET)
     .then(({tokenSeed}) => User.findOne({tokenSeed}))

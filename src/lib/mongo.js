@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-mongoose.Promise = Promise
+mongoose.Promise = Promise // Fix the built in mongo promise to match the new javascript one
 
 const state = {
   isOn: false,

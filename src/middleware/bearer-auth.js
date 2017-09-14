@@ -15,12 +15,14 @@ export default (req, res, next) => {
     return next(createError(401, '__AUTH_ERROR__ Not bearer auth (bearerAuth)'))
   }
 
+  // jwt.verify => Promise
+  // Run the bearer token against the server SECRET to see if it's valid and belongs to a user
   util.promisify(jwt.verify)(token, process.env.SECRET)
     .then(({randomHash}) => User.findOne({randomHash}))
     .then(user => {
       if(!user)
         throw createError(401, '__AUTH_ERROR__ User not found (bearerAuth)')
-      req.user = user
+      req.user = user // Put the found user onto the request and move to the next module
       next()
     })
     .catch(err => createError(401, err))

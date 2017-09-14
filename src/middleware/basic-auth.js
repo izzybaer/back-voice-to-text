@@ -14,13 +14,14 @@ export default (req, res, next) => {
     return next(createError(401, '__AUTH_ERROR__ Not basic auth (basicAuth)'))
   }
 
-  let decoded = new Buffer(encoded, 'base64').toString()
+  let decoded = util.atob(encoded)
   let [username, password] = decoded.split(':')
   if(!username || !password) {
     util.securityWarning('Clientside validation bypassed', 'Username or password was missing from login request', decoded, 'basicAuth')
     return next(createError(401, '__AUTH_ERROR__ Username or password missing (basicAuth)'))
   }
 
+  // Try to find the user decoded from the Base64 text
   User.findOne({username})
     .then(user => {
       if(!user)
@@ -28,7 +29,7 @@ export default (req, res, next) => {
       return user.passwordHashCompare(password)
     })
     .then(user => {
-      req.user = user
+      req.user = user // Put the found user onto the request and move to the next module
       next()
     })
     .catch(next)

@@ -4,6 +4,7 @@ import Document from '../../models/document.js'
 
 const mockDocument = {}
 
+// Adds a random document to the test DB
 mockDocument.createOne = ownerId =>
   new Document({
     ownerId,

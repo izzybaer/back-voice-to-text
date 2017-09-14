@@ -37,8 +37,8 @@ export const start = () =>
     state.isOn = true
     mongo.start()
       .then(() => {
-        state.http = Server(app)
-        // io(state.http, editSubscriber)
+        state.http = Server(app) // Express can't handle socket-io, sending app through http modile fixes this
+        // io(state.http, editSubscriber) // Instantiate socket-io and the subscribers to handle
 
         state.http.listen(process.env.PORT, () => {
           console.log('__SERVER_UP__', process.env.API_URL)

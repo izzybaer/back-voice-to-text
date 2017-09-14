@@ -10,6 +10,7 @@ import * as util from '../lib/util.js'
 const jsonParser = bodyParser.json()
 const authRouter = new Router()
 
+// Register a user
 authRouter.post('/auth', jsonParser, (req, res, next) => {
   let user = req.body
   console.log('__LOG__ POST /auth register user', user)
@@ -36,7 +37,7 @@ authRouter.post('/auth', jsonParser, (req, res, next) => {
     .catch(next)
 })
 
-
+// Login a user
 authRouter.get('/auth', basicAuth, (req, res, next) => {
   console.log('__LOG__ GET /auth login')
   req.user.tokenCreate()
@@ -47,6 +48,7 @@ authRouter.get('/auth', basicAuth, (req, res, next) => {
     .catch(next)
 })
 
+// Change a users password
 authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
   let passwords = req.body
   console.log('__LOG__ PUT /auth password change', passwords)
@@ -67,6 +69,7 @@ authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
     .catch(next)
 })
 
+// Verify a user belongs to the incoming token
 authRouter.get('/verify/:id', (req, res, next) => {
   let token = req.params.id
   console.log('__LOG__ GET /verify/:id token verification', token)

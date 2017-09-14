@@ -1,3 +1,4 @@
+// Confirm that all necassary environment variables have been set
 let required = [
   'PORT',
   'SECRET',
