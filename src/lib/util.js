@@ -22,8 +22,10 @@ export const btoa = text =>
 export const atob = text =>
   new Buffer(text, 'base64').toString('binary')
 
+// For logs that only should be logged in a dev/stage environment and not in prod
 export const devLog = (...args) =>
   process.env.DEBUG === 'true' ? console.log(...args) : undefined
 
+  // For errors that only should be logged in a dev/stage environment and not in prod
 export const devLogError = (...args) =>
   process.env.DEBUG === 'true' ? console.error(...args) : undefined

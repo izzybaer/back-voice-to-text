@@ -14,7 +14,7 @@ import errorHandler from '../middleware/error-middleware.js'
 const app = express()
 app.enable('trust proxy') // So I can retrieve information from the client on requests so I can log them for authorization related actions (req.hostname, req.ip, req.ips)
 
-app.use(morgan('dev'))
+app.use(morgan(process.env.DEBUG === 'true' ? 'dev' : 'combined'))
 app.use(cors({
   origin: process.env.CORS_ORIGINS,
   credentials: true,
