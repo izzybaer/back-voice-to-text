@@ -9,9 +9,9 @@ export const promisify = fn => (...args) =>
   })
 
 // Handle any potential threats to the app
-export const securityWarning = (type, message, input, source) => {
+export const securityWarning = (type, message, input, source, requestInfo) => {
   // Potentially add logic to count # of security warnings in a given time period and alert via email or push notification/etc to me, so I know when an attack is being made against the website
-  console.error(`__SECURITY_WARNING__ ${type}: ${message} (Source: ${source}, Timestamp: ${Date.now()})\nInput received: ${input}`)
+  console.error(`__SECURITY_WARNING__ ${type}: ${message} (Source: ${source}, Timestamp: ${Date.now()})\nInput received: ${input}\nUser Info: ${requestInfo}`)
 }
 
 // Encode regular text into Base64 (Binary to base64 ascii)
