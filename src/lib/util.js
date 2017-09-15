@@ -21,3 +21,9 @@ export const btoa = text =>
 // Decode base64 text into regular (Base64 ascii to binary)
 export const atob = text =>
   new Buffer(text, 'base64').toString('binary')
+
+export const devLog = (...args) =>
+  process.env.__DEBUG__ === 'true' ? console.log(...args) : undefined
+
+export const devLogError = (...args) =>
+  process.env.__DEBUG__ === 'true' ? console.error(...args) : undefined
