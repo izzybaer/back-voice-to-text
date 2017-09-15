@@ -1,5 +1,6 @@
 // Confirm that all necassary environment variables have been set
 let required = [
+  'DEBUG',
   'PORT',
   'SECRET',
   'API_URL',

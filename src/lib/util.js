@@ -23,7 +23,7 @@ export const atob = text =>
   new Buffer(text, 'base64').toString('binary')
 
 export const devLog = (...args) =>
-  process.env.__DEBUG__ === 'true' ? console.log(...args) : undefined
+  process.env.DEBUG === 'true' ? console.log(...args) : undefined
 
 export const devLogError = (...args) =>
-  process.env.__DEBUG__ === 'true' ? console.error(...args) : undefined
+  process.env.DEBUG === 'true' ? console.error(...args) : undefined

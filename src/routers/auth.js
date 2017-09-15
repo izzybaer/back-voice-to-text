@@ -19,8 +19,9 @@ authRouter.post('/auth', jsonParser, (req, res, next) => {
     ip: req.ip,
     ips: req.ips,
   }
-  console.log('__LOG__ POST /auth register user', user)
-  console.log('Request Details', requestInfo)
+  console.log('__LOG__ POST /auth register user', {...user, password: null})
+  util.devLog('User with password: ', user)
+  console.log('Request Info', requestInfo)
 
   if(!user.username || !user.displayName || !user.password) {
     util.securityWarning('Clientside validation bypassed', 'A field is missing', user, 'authRouter.post /auth', requestInfo)
@@ -53,7 +54,7 @@ authRouter.get('/auth', basicAuth, (req, res, next) => {
     ips: req.ips,
   }
   console.log('__LOG__ GET /auth login')
-  console.log('Request Details', requestInfo)
+  console.log('Request Info', requestInfo)
 
   req.user.tokenCreate()
     .then(token => {
@@ -72,9 +73,11 @@ authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
     ip: req.ip,
     ips: req.ips,
   }
-  console.log('__LOG__ PUT /auth password change', passwords)
-  console.log('Request Details', requestInfo)
+  console.log('__LOG__ PUT /auth password change')
+  util.devLog('Passwords: ', passwords)
+  console.log('Request Info', requestInfo)
 
+  // Passwords shouldn't be logged here but the data is necassary for the security warning
   if(!passwords.oldPassword || !passwords.newPassword) {
     util.securityWarning('Clientside validation bypassed', 'A field is missing', passwords, 'authRouter.put /auth', requestInfo)
     return res.sendStatus(400)
@@ -101,8 +104,9 @@ authRouter.get('/verify/:id', (req, res, next) => {
     ip: req.ip,
     ips: req.ips,
   }
-  console.log('__LOG__ GET /verify/:id token verification', token)
-  console.log('Request Details', requestInfo)
+  console.log('__LOG__ GET /verify/:id token verification')
+  util.devLog('Token: ', token)
+  console.log('Request Info', requestInfo)
 
   User.fromToken(token)
     .then(user => res.json(user))

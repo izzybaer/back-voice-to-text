@@ -8,7 +8,7 @@
   "license": "MIT",
   "jest": {
     "globals": {
-      "__DEBUG__": false,
+      "DEBUG": false,
       "process.env": {
         "NODE_ENV": "testing"
       }
