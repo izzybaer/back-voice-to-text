@@ -5,13 +5,21 @@ import User from '../models/user.js'
 import * as util from '../lib/util.js'
 
 export default (req, res, next) => {
+  let requestInfo = {
+    headers: req.headers,
+    hostname: req.hostname,
+    ip: req.ip,
+    ips: req.ips,
+  }
+  console.log('Request Info', requestInfo)
+
   let {authorization} = req.headers
   if(!authorization)
     return next(createError(401, '__AUTH_ERROR__ No authorization header (bearerAuth)'))
 
   let token = authorization.split('Bearer ')[1]
   if(!token) {
-    util.securityWarning('Clientside validation bypassed', 'Bearer authorization header has been tampered with', authorization, 'bearerAuth')
+    util.securityWarning('Clientside validation bypassed', 'Bearer authorization header has been tampered with', authorization, 'bearerAuth', requestInfo)
     return next(createError(401, '__AUTH_ERROR__ Not bearer auth (bearerAuth)'))
   }
 

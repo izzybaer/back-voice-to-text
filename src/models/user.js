@@ -13,8 +13,10 @@ const userSchema = new mongoose.Schema({
   tokenSeed: {type: String, default: ''},
 })
 
-userSchema.methods.passwordHashCreate = function(password) {
-  console.log('passwordHashCreate', password)
+userSchema.methods.passwordHashCreate = function(password) { // no arrow because of context
+  console.log('passwordHashCreate')
+  util.devLog('Password: ', password)
+
   return bcrypt.hash(password, 8)
     .then(hash => {
       this.passwordHash = hash
@@ -22,8 +24,10 @@ userSchema.methods.passwordHashCreate = function(password) {
     })
 }
 
-userSchema.methods.passwordHashCompare = function(password) {
-  console.log('passwordHashCompare', password)
+userSchema.methods.passwordHashCompare = function(password) { // no arrow because of context
+  console.log('passwordHashCompare')
+  util.devLog('Password: ', password)
+  
   return bcrypt.compare(password, this.passwordHash)
     .then(success => {
       if(!success)
@@ -32,7 +36,7 @@ userSchema.methods.passwordHashCompare = function(password) {
     })
 }
 
-userSchema.methods.tokenCreate = function() {
+userSchema.methods.tokenCreate = function() { // no arrow because of context
   this.tokenSeed = randomBytes(32).toString('base64')
   return this.save()
     .then(user => jwt.sign({tokenSeed: this.tokenSeed}, process.env.SECRET))
@@ -43,7 +47,7 @@ const User = mongoose.model('user', userSchema)
 
 User.createFromSignup = user => {
   if(!user.username || !user.displayName || !user.password) {
-    util.securityWarning('Clientside validation bypassed', 'A field is missing', user, 'User.createFromSignup')
+    util.securityWarning('Clientside validation bypassed', 'A field is missing', user, 'User.createFromSignup', null)
     return Promise.reject(
       createError(400, '__AUTH_ERROR__ Missing fields for new user (User.createFromSignup)'))
   }

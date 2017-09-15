@@ -13,18 +13,26 @@ const authRouter = new Router()
 // Register a user
 authRouter.post('/auth', jsonParser, (req, res, next) => {
   let user = req.body
-  console.log('__LOG__ POST /auth register user', user)
+  let requestInfo = {
+    headers: req.headers,
+    hostname: req.hostname,
+    ip: req.ip,
+    ips: req.ips,
+  }
+  console.log('__LOG__ POST /auth register user', {...user, password: null})
+  util.devLog('User with password: ', user)
+  console.log('Request Info', requestInfo)
 
   if(!user.username || !user.displayName || !user.password) {
-    util.securityWarning('Clientside validation bypassed', 'A field is missing', user, 'authRouter.post /auth')
+    util.securityWarning('Clientside validation bypassed', 'A field is missing', user, 'authRouter.post /auth', requestInfo)
     return res.sendStatus(400)
   }
   if(!/^[\w]+$/.test(user.displayName)) {
-    util.securityWarning('Clientside validation bypassed', 'Display Name has characters that aren\'t allowed', user, 'authRouter.post /auth')
+    util.securityWarning('Clientside validation bypassed', 'Display Name has characters that aren\'t allowed', user, 'authRouter.post /auth', requestInfo)
     return res.sendStatus(400)
   }
   if(user.password.length < 8) {
-    util.securityWarning('Clientside validation bypassed', 'Password too short', user, 'authRouter.post /auth')
+    util.securityWarning('Clientside validation bypassed', 'Password too short', user, 'authRouter.post /auth', requestInfo)
     return res.sendStatus(400)
   }
 
@@ -39,7 +47,15 @@ authRouter.post('/auth', jsonParser, (req, res, next) => {
 
 // Login a user
 authRouter.get('/auth', basicAuth, (req, res, next) => {
+  let requestInfo = {
+    headers: req.headers,
+    hostname: req.hostname,
+    ip: req.ip,
+    ips: req.ips,
+  }
   console.log('__LOG__ GET /auth login')
+  console.log('Request Info', requestInfo)
+
   req.user.tokenCreate()
     .then(token => {
       res.cookie('X-VtT-Token', token)
@@ -51,13 +67,23 @@ authRouter.get('/auth', basicAuth, (req, res, next) => {
 // Change a users password
 authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
   let passwords = req.body
-  console.log('__LOG__ PUT /auth password change', passwords)
+  let requestInfo = {
+    headers: req.headers,
+    hostname: req.hostname,
+    ip: req.ip,
+    ips: req.ips,
+  }
+  console.log('__LOG__ PUT /auth password change')
+  util.devLog('Passwords: ', passwords)
+  console.log('Request Info', requestInfo)
+
+  // Passwords shouldn't be logged here but the data is necassary for the security warning
   if(!passwords.oldPassword || !passwords.newPassword) {
-    util.securityWarning('Clientside validation bypassed', 'A field is missing', passwords, 'authRouter.put /auth')
+    util.securityWarning('Clientside validation bypassed', 'A field is missing', passwords, 'authRouter.put /auth', requestInfo)
     return res.sendStatus(400)
   }
   if(passwords.oldPassword.length < 8 || passwords.newPassword.length < 8) {
-    util.securityWarning('Clientside validation bypassed', 'Password too short', passwords, 'authRouter.put /auth')
+    util.securityWarning('Clientside validation bypassed', 'Password too short', passwords, 'authRouter.put /auth', requestInfo)
     return res.sendStatus(400)
   }
 
@@ -72,7 +98,15 @@ authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
 // Verify a user belongs to the incoming token
 authRouter.get('/verify/:id', (req, res, next) => {
   let token = req.params.id
-  console.log('__LOG__ GET /verify/:id token verification', token)
+  let requestInfo = {
+    headers: req.headers,
+    hostname: req.hostname,
+    ip: req.ip,
+    ips: req.ips,
+  }
+  console.log('__LOG__ GET /verify/:id token verification')
+  util.devLog('Token: ', token)
+  console.log('Request Info', requestInfo)
 
   User.fromToken(token)
     .then(user => res.json(user))
