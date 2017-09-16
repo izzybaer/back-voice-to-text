@@ -27,7 +27,7 @@ userSchema.methods.passwordHashCreate = function(password) { // no arrow because
 userSchema.methods.passwordHashCompare = function(password) { // no arrow because of context
   console.log('passwordHashCompare')
   util.devLog('Password: ', password)
-  
+
   return bcrypt.compare(password, this.passwordHash)
     .then(success => {
       if(!success)
