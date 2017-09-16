@@ -17,6 +17,7 @@
   },
   "scripts": {
     "lint": "eslint . --fix",
+    "travis-lint": "eslint .",
     "start": "babel-node index.js",
     "watch": "nodemon index.js",
     "test": "jest --coverage --runInBand",
