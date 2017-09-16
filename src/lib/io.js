@@ -4,7 +4,7 @@ export default (http, subscribers) =>
   io(http)
     .on('connection', socket => {
       Object.keys(subscribers)
-        .map(type => ({ type, handler: subscribers[type] }))
+        .map(type => ({type, handler: subscribers[type]}))
         .forEach(subscriber => {
           socket.on(subscriber.type, payload => {
             console.log('__SUBSCRIBE_EVENT__', subscriber.type, payload)

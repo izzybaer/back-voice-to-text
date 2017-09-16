@@ -8,7 +8,7 @@ import mockDocument from './lib/mock-document.js'
 import mockUser from './lib/mock-user.js'
 import * as server from '../lib/server.js'
 
-const API_URL = process.env.API_URL
+const {API_URL} = process.env
 
 describe('Testing Document router', () => {
 
