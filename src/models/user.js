@@ -13,17 +13,6 @@ const userSchema = new mongoose.Schema({
   tokenSeed: {type: String, default: ''},
 })
 
-userSchema.methods.passwordHashCreate = function(password) { // no arrow because of context
-  console.log('passwordHashCreate')
-  util.devLog('Password: ', password)
-
-  return bcrypt.hash(password, 8)
-    .then(hash => {
-      this.passwordHash = hash
-      return this
-    })
-}
-
 userSchema.methods.passwordHashCompare = function(password) { // no arrow because of context
   console.log('passwordHashCompare')
   util.devLog('Password: ', password)
