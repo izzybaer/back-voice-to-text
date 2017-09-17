@@ -4,7 +4,7 @@
   "description": "backend of voice to text",
   "main": "index.js",
   "repository": "git@github.com:SpenGietz/back-voice-to-text.git",
-  "author": "Spencer Gietzen <Speng1516@comcast.net>",
+  "author": "Spencer Gietzen <spencer@spengietz.com>",
   "license": "MIT",
   "jest": {
     "globals": {
@@ -23,18 +23,15 @@
     "test": "jest --coverage --runInBand",
     "test-watch": "jest --watch --runInBand",
     "mongo-on": "mkdir -p ./db && mongod --dbpath ./db",
-    "mongo-off": "killall mongod"
+    "mongo-off": "sudo killall mongod"
   },
   "dependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-jest": "^21.0.2",
-    "babel-loader": "^7.1.2",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-plugin-transform-strict-mode": "^6.24.1",
     "babel-preset-env": "^1.6.0",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
     "babel-register": "^6.26.0",
     "bcrypt": "^1.0.3",
     "body-parser": "^1.17.2",

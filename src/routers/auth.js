@@ -77,7 +77,7 @@ authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
   util.devLog('Passwords: ', passwords)
   console.log('Request Info', requestInfo)
 
-  // Passwords shouldn't be logged here but the data is necassary for the security warning
+  // Passwords shouldn't be logged here but the data is necessary for the security warning so I can see what was being sent in that bypassed the filter
   if(!passwords.oldPassword || !passwords.newPassword) {
     util.securityWarning('Clientside validation bypassed', 'A field is missing', passwords, 'authRouter.put /auth', requestInfo)
     return res.sendStatus(400)
