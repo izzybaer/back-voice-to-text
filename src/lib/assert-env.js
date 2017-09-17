@@ -1,4 +1,4 @@
-// Confirm that all necassary environment variables have been set
+// Confirm that all necessary environment variables have been set
 let required = [
   'DEBUG',
   'PORT',
