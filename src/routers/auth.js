@@ -98,7 +98,7 @@ authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
 })
 
 // Verify a user belongs to the incoming token
-authRouter.post('/verify', (req, res, next) => {
+authRouter.post('/verify', jsonParser, (req, res, next) => {
   let {token} = req.body
   let requestInfo = {
     headers: req.headers,

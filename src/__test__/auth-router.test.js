@@ -246,7 +246,7 @@ describe('Testing Auth router', () => {
     )
 
     test('It should return 401 unauthorized - bad token', () =>
-      superagent.get(`${API_URL}/verify`)
+      superagent.post(`${API_URL}/verify`)
         .send({token: 'asdsadasdasdasdasdsa'})
         .then(res => {
           throw res
