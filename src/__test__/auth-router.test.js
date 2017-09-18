@@ -231,11 +231,12 @@ describe('Testing Auth router', () => {
     )
   })
 
-  describe('Testing GET /verify/:id token verify', () => {
+  describe('Testing GET /verify token verify', () => {
     test('It should return 200 and the user belonging to the token', () =>
       mockUser.createOne()
         .then(user =>
-          superagent.get(`${API_URL}/verify/${user.token}`)
+          superagent.post(`${API_URL}/verify`)
+            .send({token: user.token})
             .then(res => {
               expect(res.status).toEqual(200)
               expect(res.body.username).toEqual(user.username)
@@ -245,7 +246,8 @@ describe('Testing Auth router', () => {
     )
 
     test('It should return 401 unauthorized - bad token', () =>
-      superagent.get(`${API_URL}/verify/asdfasdfasdfasdfadsfadf`)
+      superagent.post(`${API_URL}/verify`)
+        .send({token: 'asdsadasdasdasdasdsa'})
         .then(res => {
           throw res
         })

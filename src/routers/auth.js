@@ -39,6 +39,7 @@ authRouter.post('/auth', jsonParser, (req, res, next) => {
   new User.createFromSignup(user)
     .then(user => user.tokenCreate())
     .then(token => {
+      res.cookie('X-VtT-Username', user.username)
       res.cookie('X-VtT-Token', token)
       res.send(token)
     })
@@ -58,6 +59,7 @@ authRouter.get('/auth', basicAuth, (req, res, next) => {
 
   req.user.tokenCreate()
     .then(token => {
+      res.cookie('X-VtT-Username', req.user.username)
       res.cookie('X-VtT-Token', token)
       res.send(token)
     })
@@ -96,8 +98,8 @@ authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
 })
 
 // Verify a user belongs to the incoming token
-authRouter.get('/verify/:id', (req, res, next) => {
-  let token = req.params.id
+authRouter.post('/verify', jsonParser, (req, res, next) => {
+  let {token} = req.body
   let requestInfo = {
     headers: req.headers,
     hostname: req.hostname,
