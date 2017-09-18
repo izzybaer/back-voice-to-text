@@ -1,4 +1,6 @@
 import mongoose from 'mongoose'
+mongoose.Promise = Promise
+
 import {randomBytes} from 'crypto'
 import createError from 'http-errors'
 import * as jwt from 'jsonwebtoken'
@@ -12,17 +14,6 @@ const userSchema = new mongoose.Schema({
   passwordHash: {type: String},
   tokenSeed: {type: String, default: ''},
 })
-
-userSchema.methods.passwordHashCreate = function(password) { // no arrow because of context
-  console.log('passwordHashCreate')
-  util.devLog('Password: ', password)
-
-  return bcrypt.hash(password, 8)
-    .then(hash => {
-      this.passwordHash = hash
-      return this
-    })
-}
 
 userSchema.methods.passwordHashCompare = function(password) { // no arrow because of context
   console.log('passwordHashCompare')
@@ -48,8 +39,7 @@ const User = mongoose.model('user', userSchema)
 User.createFromSignup = user => {
   if(!user.username || !user.displayName || !user.password) {
     util.securityWarning('Clientside validation bypassed', 'A field is missing', user, 'User.createFromSignup', null)
-    return Promise.reject(
-      createError(400, '__AUTH_ERROR__ Missing fields for new user (User.createFromSignup)'))
+    return Promise.reject(createError(400, '__AUTH_ERROR__ Missing fields for new user (User.createFromSignup)'))
   }
 
   let {password} = user
