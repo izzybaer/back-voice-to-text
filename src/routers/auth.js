@@ -111,10 +111,7 @@ authRouter.post('/verify', (req, res, next) => {
   console.log('Request Info', requestInfo)
 
   User.fromToken(token)
-    .then(user => {
-      res.cookie('X-VtT-Username', user.username)
-      res.json(user)
-    })
+    .then(user => res.json(user))
     .catch(() => res.sendStatus(401))
 })
 
