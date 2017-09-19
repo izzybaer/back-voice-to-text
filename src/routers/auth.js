@@ -39,7 +39,6 @@ authRouter.post('/auth', jsonParser, (req, res, next) => {
   new User.createFromSignup(user)
     .then(user => user.tokenCreate())
     .then(token => {
-      res.cookie('X-VtT-Username', user.username)
       res.cookie('X-VtT-Token', token)
       res.send(token)
     })
@@ -59,7 +58,6 @@ authRouter.get('/auth', basicAuth, (req, res, next) => {
 
   req.user.tokenCreate()
     .then(token => {
-      res.cookie('X-VtT-Username', req.user.username)
       res.cookie('X-VtT-Token', token)
       res.send(token)
     })
@@ -106,7 +104,7 @@ authRouter.post('/verify', jsonParser, (req, res, next) => {
     ip: req.ip,
     ips: req.ips,
   }
-  console.log('__LOG__ GET /verify/:id token verification')
+  console.log('__LOG__ GET /verify token verification')
   util.devLog('Token: ', token)
   console.log('Request Info', requestInfo)
 
