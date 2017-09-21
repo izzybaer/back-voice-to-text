@@ -19,7 +19,7 @@ authRouter.post('/auth', jsonParser, (req, res, next) => {
     ip: req.ip,
     ips: req.ips,
   }
-  console.log('__LOG__ POST /auth register user', {...user, password: null})
+  console.log('__LOG__ POST /auth register user', {...user, password: null, password2: null})
   util.devLog('User with password: ', user)
   console.log('Request Info', requestInfo)
 
