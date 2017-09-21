@@ -95,7 +95,21 @@ authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
 })
 
 req.get('/logout', bearerAuth, (req, res, next) => {
-  res.clearCookie('X-VtT-Token')
+  let requestInfo = {
+    headers: req.headers,
+    hostname: req.hostname,
+    ip: req.ip,
+    ips: req.ips,
+  }
+  console.log('__LOG__ GET /logout logout')
+  console.log('Request Info', requestInfo)
+
+  req.user.logout()
+    .then(() => {
+      res.clearCookie('X-VtT-Token')
+      res.sendStatus(200)
+    })
+    .catch(next)
 })
 
 export default authRouter
