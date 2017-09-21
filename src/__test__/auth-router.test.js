@@ -230,30 +230,4 @@ describe('Testing Auth router', () => {
         )
     )
   })
-
-  describe('Testing GET /verify token verify', () => {
-    test('It should return 200 and the user belonging to the token', () =>
-      mockUser.createOne()
-        .then(user =>
-          superagent.post(`${API_URL}/verify`)
-            .send({token: user.token})
-            .then(res => {
-              expect(res.status).toEqual(200)
-              expect(res.body.username).toEqual(user.username)
-              expect(res.body.displayName).toEqual(user.displayName)
-            })
-        )
-    )
-
-    test('It should return 401 unauthorized - bad token', () =>
-      superagent.post(`${API_URL}/verify`)
-        .send({token: 'asdsadasdasdasdasdsa'})
-        .then(res => {
-          throw res
-        })
-        .catch(err => {
-          expect(err.status).toEqual(401)
-        })
-    )
-  })
 })
