@@ -87,11 +87,10 @@ authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
     return res.sendStatus(400)
   }
 
-  User.fromToken(req.headers.authorization.split('Bearer ')[1])
-    .then(user => user.passwordHashCompare(passwords.oldPassword))
-    .then(user => bcrypt.hash(passwords.newPassword, 1)
-      .then(passwordHash => User.findOneAndUpdate({username: user.username}, {passwordHash})))
-    .then(user => res.sendStatus(200))
+  req.user.passwordHashCompare(passwords.oldPassword)
+    .then(user => bcrypt.hash(passwords.newPassword, 1))
+    .then(passwordHash => User.findOneAndUpdate({username: req.user.username}, {passwordHash}))
+    .then(() => res.sendStatus(200))
     .catch(next)
 })
 
