@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
   username: {type: String, required: true, unique: true},
   displayName: {type: String, required: true, unique: true},
   passwordHash: {type: String},
-  tokenSeed: {type: String, default: ''},
+  tokenSeed: {type: String},
 })
 
 userSchema.methods.passwordHashCompare = function(password) { // no arrow because of context
@@ -32,6 +32,11 @@ userSchema.methods.tokenCreate = function() { // no arrow because of context
   return this.save()
     .then(user => jwt.sign({tokenSeed: this.tokenSeed}, process.env.SECRET))
     .then(token => token)
+}
+
+userSchema.methods.logout = function() {
+  this.tokenSeed = undefined
+  return this.save()
 }
 
 const User = mongoose.model('user', userSchema)

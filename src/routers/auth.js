@@ -19,7 +19,7 @@ authRouter.post('/auth', jsonParser, (req, res, next) => {
     ip: req.ip,
     ips: req.ips,
   }
-  console.log('__LOG__ POST /auth register user', {...user, password: null})
+  console.log('__LOG__ POST /auth register user', {...user, password: null, password2: null})
   util.devLog('User with password: ', user)
   console.log('Request Info', requestInfo)
 
@@ -39,7 +39,7 @@ authRouter.post('/auth', jsonParser, (req, res, next) => {
   new User.createFromSignup(user)
     .then(user => user.tokenCreate())
     .then(token => {
-      res.cookie('X-VtT-Token', token)
+      res.cookie('X-VtT-Token', token, {maxAge: 86400000, httpOnly: true, secure: true})
       res.send(token)
     })
     .catch(next)
@@ -58,7 +58,7 @@ authRouter.get('/auth', basicAuth, (req, res, next) => {
 
   req.user.tokenCreate()
     .then(token => {
-      res.cookie('X-VtT-Token', token)
+      res.cookie('X-VtT-Token', token, {maxAge: 86400000, httpOnly: true, secure: true})
       res.send(token)
     })
     .catch(next)
@@ -87,30 +87,29 @@ authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
     return res.sendStatus(400)
   }
 
-  User.fromToken(req.headers.authorization.split('Bearer ')[1])
-    .then(user => user.passwordHashCompare(passwords.oldPassword))
-    .then(user => bcrypt.hash(passwords.newPassword, 1)
-      .then(passwordHash => User.findOneAndUpdate({username: user.username}, {passwordHash})))
-    .then(user => res.sendStatus(200))
+  req.user.passwordHashCompare(passwords.oldPassword)
+    .then(user => bcrypt.hash(passwords.newPassword, 1))
+    .then(passwordHash => User.findOneAndUpdate({username: req.user.username}, {passwordHash}))
+    .then(() => res.sendStatus(200))
     .catch(next)
 })
 
-// Verify a user belongs to the incoming token
-authRouter.post('/verify', jsonParser, (req, res, next) => {
-  let {token} = req.body
+authRouter.get('/logout', bearerAuth, (req, res, next) => {
   let requestInfo = {
     headers: req.headers,
     hostname: req.hostname,
     ip: req.ip,
     ips: req.ips,
   }
-  console.log('__LOG__ GET /verify token verification')
-  util.devLog('Token: ', token)
+  console.log('__LOG__ GET /logout logout')
   console.log('Request Info', requestInfo)
 
-  User.fromToken(token)
-    .then(user => res.json(user))
-    .catch(() => res.sendStatus(401))
+  req.user.logout()
+    .then(() => {
+      res.clearCookie('X-VtT-Token')
+      res.sendStatus(200)
+    })
+    .catch(next)
 })
 
 export default authRouter
