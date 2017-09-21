@@ -29,16 +29,12 @@ export default (req, res, next) => {
     .then(({tokenSeed}) => User.findOne({tokenSeed}))
     .then(user => {
       if(!user)
-        throw createError(401, '__AUTH_ERROR__ User not found (bearerAuth)')
-      if(user.tokenExpire < Date.now()) {
-        user.logout()
-          .then(() => {
-            throw createError(401, '__AUTH_ERROR__ Session has expired (bearerAuth)')
-          })
-      } else {
-        req.user = user // Put the found user onto the request and move to the next module
-        next()
-      }
+        return next(createError(401, '__AUTH_ERROR__ User not found (bearerAuth)'))
+      if(user.tokenExpire < Date.now())
+        return user.logout()
+          .then(() => next(createError(401, '__AUTH_ERROR__ Session has expired (bearerAuth)')))
+      req.user = user // Put the found user onto the request and move to the next module
+      next()
     })
     .catch(next)
 }
