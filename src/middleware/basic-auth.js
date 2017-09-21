@@ -33,7 +33,7 @@ export default (req, res, next) => {
   User.findOne({username})
     .then(user => {
       if(!user)
-        throw createError(401, '__AUTH_ERROR__ User not found (basicAuth)')
+        return next(createError(401, '__AUTH_ERROR__ User not found (basicAuth)'))
       return user.passwordHashCompare(password)
     })
     .then(user => {

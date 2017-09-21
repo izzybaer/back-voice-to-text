@@ -229,6 +229,29 @@ describe('Testing Auth router', () => {
             })
         )
     )
+
+    test('It should return 401 session expired', () => {
+      let token
+      return mockUser.createOne()
+        .then(user => {
+          ({token} = user)
+          return User.findOneAndUpdate({username: user.username}, {tokenExpire: 1}, {runValidators: true, new: true})
+        })
+        .then(user =>
+          superagent.put(`${API_URL}/auth`)
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+              oldPassword: user.password,
+              newPassword: '00000000',
+            })
+        )
+        .then(res => {
+          throw res
+        })
+        .catch(err => {
+          expect(err.status).toEqual(401)
+        })
+    })
   })
 
   describe('Testing GET /logout logout', () => {
@@ -236,16 +259,9 @@ describe('Testing Auth router', () => {
       let username
       return mockUser.createOne()
         .then(user => {
-          ({username} = user) // destructuring without let/var/const before it requires () around it
-          let basic = util.btoa(`${user.username}:${user.password}`)
-          return superagent.get(`${API_URL}/auth`)
-            .set('Authorization', `Basic ${basic}`)
-        })
-        .then(res => {
-          expect(res.status).toEqual(200)
-          expect(res.text).toBeDefined()
+          ({username} = user) // destructuring without let/var in front requires () around it all
           return superagent.get(`${API_URL}/logout`)
-            .set('Authorization', `Bearer ${res.text}`)
+            .set('Authorization', `Bearer ${user.token}`)
         })
         .then(res => {
           expect(res.status).toEqual(200)
