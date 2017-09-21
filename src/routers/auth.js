@@ -94,22 +94,4 @@ authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
     .catch(next)
 })
 
-// Verify a user belongs to the incoming token
-authRouter.post('/verify', jsonParser, (req, res, next) => {
-  let {token} = req.body
-  let requestInfo = {
-    headers: req.headers,
-    hostname: req.hostname,
-    ip: req.ip,
-    ips: req.ips,
-  }
-  console.log('__LOG__ GET /verify token verification')
-  util.devLog('Token: ', token)
-  console.log('Request Info', requestInfo)
-
-  User.fromToken(token)
-    .then(user => res.json(user))
-    .catch(() => res.sendStatus(401))
-})
-
 export default authRouter
