@@ -33,5 +33,5 @@ export default (req, res, next) => {
       req.user = user // Put the found user onto the request and move to the next module
       next()
     })
-    .catch(err => createError(401, err))
+    .catch(next)
 }

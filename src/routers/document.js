@@ -12,16 +12,13 @@ const documentRouter = new Router()
 documentRouter.post('/document', bearerAuth, jsonParser, (req, res, next) => {
   let doc = req.body
   console.log('__LOG__ POST /document new document', doc)
+  console.log('__LOG__ POST /document ownerId', req.user._id)
 
-  User.fromToken(req.headers.authorization.split('Bearer ')[1])
-    .then(user => {
-      console.log('__LOG__ POST /document ownerId', user._id)
-      doc.ownerId = user._id
-      new Document(doc)
-        .save()
-        .then(document => res.json(document))
-        .catch(next)
-    })
+  doc.ownerId = req.user._id
+  new Document(doc)
+    .save()
+    .then(document => res.json(document))
+    .catch(next)
 })
 
 // View a specific document
