@@ -236,7 +236,7 @@ describe('Testing Auth router', () => {
       let username
       return mockUser.createOne()
         .then(user => {
-          ({username} = user) // destructuring without let/var/const before it requires () around it
+          ({username} = user) // destructuring without let/var/const before it requires () around all of it
           let basic = util.btoa(`${user.username}:${user.password}`)
           return superagent.get(`${API_URL}/auth`)
             .set('Authorization', `Basic ${basic}`)

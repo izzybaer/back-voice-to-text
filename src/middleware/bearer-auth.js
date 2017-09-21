@@ -30,8 +30,15 @@ export default (req, res, next) => {
     .then(user => {
       if(!user)
         throw createError(401, '__AUTH_ERROR__ User not found (bearerAuth)')
-      req.user = user // Put the found user onto the request and move to the next module
-      next()
+      if(user.tokenExpire < Date.now()) {
+        user.logout()
+          .then(() => {
+            throw createError(401, '__AUTH_ERROR__ Session has expired (bearerAuth)')
+          })
+      } else {
+        req.user = user // Put the found user onto the request and move to the next module
+        next()
+      }
     })
     .catch(next)
 }
