@@ -39,7 +39,7 @@ authRouter.post('/auth', jsonParser, (req, res, next) => {
   new User.createFromSignup(user)
     .then(user => user.tokenCreate())
     .then(token => {
-      res.cookie('X-VtT-Token', token)
+      res.cookie('X-VtT-Token', token, {maxAge: 86400000, httpOnly: true, secure: true})
       res.send(token)
     })
     .catch(next)
@@ -58,7 +58,7 @@ authRouter.get('/auth', basicAuth, (req, res, next) => {
 
   req.user.tokenCreate()
     .then(token => {
-      res.cookie('X-VtT-Token', token)
+      res.cookie('X-VtT-Token', token, {maxAge: 86400000, httpOnly: true, secure: true})
       res.send(token)
     })
     .catch(next)
@@ -92,6 +92,10 @@ authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
     .then(passwordHash => User.findOneAndUpdate({username: req.user.username}, {passwordHash}))
     .then(() => res.sendStatus(200))
     .catch(next)
+})
+
+req.get('/logout', bearerAuth, (req, res, next) => {
+  res.clearCookie('X-VtT-Token')
 })
 
 export default authRouter

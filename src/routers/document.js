@@ -14,8 +14,7 @@ documentRouter.post('/document', bearerAuth, jsonParser, (req, res, next) => {
   console.log('__LOG__ POST /document new document', doc)
   console.log('__LOG__ POST /document ownerId', req.user._id)
 
-  doc.ownerId = req.user._id
-  new Document(doc)
+  new Document({...doc, ownerId: req.user._id})
     .save()
     .then(document => res.json(document))
     .catch(next)
