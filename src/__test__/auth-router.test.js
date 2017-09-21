@@ -230,4 +230,33 @@ describe('Testing Auth router', () => {
         )
     )
   })
+
+  describe('Testing GET /logout logout', () => {
+    test('It should return 200 and clear the users token seed from the db', () => {
+      let username
+      return mockUser.createOne()
+        .then(user => {
+          ({username} = user) // destructuring without let/var/const before it requires () around it
+          let basic = util.btoa(`${user.username}:${user.password}`)
+          return superagent.get(`${API_URL}/auth`)
+            .set('Authorization', `Basic ${basic}`)
+        })
+        .then(res => {
+          expect(res.status).toEqual(200)
+          expect(res.text).toBeDefined()
+          return superagent.get(`${API_URL}/logout`)
+            .set('Authorization', `Bearer ${res.text}`)
+        })
+        .then(res => {
+          expect(res.status).toEqual(200)
+          return User.findOne({username})
+        })
+        .then(user => {
+          expect(user.username).toBeDefined()
+          expect(user.displayName).toBeDefined()
+          expect(user.passwordHash).toBeDefined()
+          expect(user.tokenSeed).toBeUndefined()
+        })
+    })
+  })
 })

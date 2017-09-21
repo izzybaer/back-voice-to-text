@@ -94,7 +94,7 @@ authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
     .catch(next)
 })
 
-req.get('/logout', bearerAuth, (req, res, next) => {
+authRouter.get('/logout', bearerAuth, (req, res, next) => {
   let requestInfo = {
     headers: req.headers,
     hostname: req.hostname,
