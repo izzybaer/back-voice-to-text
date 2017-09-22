@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
   displayName: {type: String, required: true, unique: true},
   passwordHash: {type: String},
   tokenSeed: {type: String},
-  tokenExpire: {type: Number},
+  tokenExpire: {type: Number, default: 0},
 })
 
 userSchema.methods.passwordHashCompare = function(password) { // no arrow because of context

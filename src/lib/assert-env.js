@@ -2,7 +2,6 @@
 let required = [
   'DEBUG',
   'PORT',
-  'SECRET',
   'API_URL',
   'NODE_ENV',
   'CLIENT_URL',
