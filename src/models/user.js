@@ -13,10 +13,10 @@ const userSchema = new mongoose.Schema({
   displayName: {type: String, required: true, unique: true},
   passwordHash: {type: String},
   tokenSeed: {type: String},
-  tokenExpire: {type: Number},
+  tokenExpire: {type: Number, default: 0},
 })
 
-userSchema.methods.passwordHashCompare = function(password) { // no arrow because of context
+userSchema.methods.passwordHashCompare = function(password) { // no arrow because of context for the model instance methods
   console.log('passwordHashCompare')
   util.devLog('Password: ', password)
 
@@ -28,7 +28,7 @@ userSchema.methods.passwordHashCompare = function(password) { // no arrow becaus
     })
 }
 
-userSchema.methods.tokenCreate = function() { // no arrow because of context
+userSchema.methods.tokenCreate = function() {
   this.tokenSeed = randomBytes(32).toString('base64')
   this.tokenExpire = Date.now() + 86400000
   return this.save()

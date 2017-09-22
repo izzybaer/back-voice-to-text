@@ -19,9 +19,10 @@ authRouter.post('/auth', jsonParser, (req, res, next) => {
     ip: req.ip,
     ips: req.ips,
   }
-  console.log('__LOG__ POST /auth register user', {...user, password: null, password2: null})
-  util.devLog('User with password: ', user)
-  console.log('Request Info', requestInfo)
+  console.log('__LOG__ POST /auth register user')
+  util.devLog('Full User Info:', user)
+  console.log('User Info:', {...user, password: null, password2: null})
+  console.log('Request Info:', requestInfo)
 
   if(!user.username || !user.displayName || !user.password) {
     util.securityWarning('Clientside validation bypassed', 'A field is missing', user, 'authRouter.post /auth', requestInfo)
@@ -54,7 +55,9 @@ authRouter.get('/auth', basicAuth, (req, res, next) => {
     ips: req.ips,
   }
   console.log('__LOG__ GET /auth login')
-  console.log('Request Info', requestInfo)
+  util.devLog('Full User Info:', req.user)
+  console.log('User Info:', {...req.user._doc, passwordHash: undefined, tokenSeed: undefined, tokenExpire: undefined})
+  console.log('Request Info:', requestInfo)
 
   req.user.tokenCreate()
     .then(token => {
@@ -74,8 +77,10 @@ authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
     ips: req.ips,
   }
   console.log('__LOG__ PUT /auth password change')
-  util.devLog('Passwords: ', passwords)
-  console.log('Request Info', requestInfo)
+  util.devLog('Full User Info:', req.user)
+  console.log('User Info:', {...req.user._doc, passwordHash: undefined, tokenSeed: undefined, tokenExpire: undefined})
+  util.devLog('Passwords:', passwords)
+  console.log('Request Info:', requestInfo)
 
   // Passwords shouldn't be logged here but the data is necessary for the security warning so I can see what was being sent in that bypassed the filter
   if(!passwords.oldPassword || !passwords.newPassword) {
@@ -102,7 +107,9 @@ authRouter.get('/logout', bearerAuth, (req, res, next) => {
     ips: req.ips,
   }
   console.log('__LOG__ GET /logout logout')
-  console.log('Request Info', requestInfo)
+  util.devLog('Full User Info:', req.user)
+  console.log('User Info:', {...req.user._doc, passwordHash: undefined, tokenSeed: undefined, tokenExpire: undefined})
+  console.log('Request Info:', requestInfo)
 
   req.user.logout()
     .then(() => {
