@@ -20,6 +20,7 @@ export default (req, res, next) => {
   let token = authorization.split('Bearer ')[1]
   if(!token) {
     util.securityWarning('Clientside validation bypassed', 'Bearer authorization header has been tampered with', authorization, 'bearerAuth', requestInfo)
+    res.clearCookie('X-VtT-Token')
     return next(createError(401, '__AUTH_ERROR__ Not bearer auth (bearerAuth)'))
   }
 
