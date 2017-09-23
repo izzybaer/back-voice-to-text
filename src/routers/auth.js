@@ -83,13 +83,41 @@ authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
   console.log('Request Info:', requestInfo)
 
   // Passwords shouldn't be logged here but the data is necessary for the security warning so I can see what was being sent in that bypassed the filter
-  if(!passwords.oldPassword || !passwords.newPassword) {
+  if(!passwords.oldPassword || !passwords.newPassword || !passwords.newPassword2) {
     util.securityWarning('Clientside validation bypassed', 'A field is missing', passwords, 'authRouter.put /auth', requestInfo)
-    return res.sendStatus(400)
+    return req.user.logout() // destroy session if security has been bypassed
+      .then(() => {
+        res.clearCookie('X-VtT-Token')
+        res.sendStatus(400)
+      })
+      .catch(next)
+  }
+  if(passwords.oldPassword === passwords.newPassword || passwords.oldPassword === passwords.newPassword2) {
+    util.securityWarning('Clientside validation bypassed', 'Old password is equal to new password', passwords, 'authRouter.put /auth', requestInfo)
+    return req.user.logout()
+      .then(() => {
+        res.clearCookie('X-VtT-Token')
+        res.sendStatus(400)
+      })
+      .catch(next)
+  }
+  if(passwords.newPassword !== passwords.newPassword2) {
+    util.securityWarning('Clientside validation bypassed', 'New password 1 and 2 don\'t match', passwords, 'authRouter.put /auth', requestInfo)
+    return req.user.logout()
+      .then(() => {
+        res.clearCookie('X-VtT-Token')
+        res.sendStatus(400)
+      })
+      .catch(next)
   }
   if(passwords.oldPassword.length < 8 || passwords.newPassword.length < 8) {
     util.securityWarning('Clientside validation bypassed', 'Password too short', passwords, 'authRouter.put /auth', requestInfo)
-    return res.sendStatus(400)
+    return req.user.logout()
+      .then(() => {
+        res.clearCookie('X-VtT-Token')
+        res.sendStatus(400)
+      })
+      .catch(next)
   }
 
   req.user.passwordHashCompare(passwords.oldPassword)

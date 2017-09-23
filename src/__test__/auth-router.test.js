@@ -153,6 +153,7 @@ describe('Testing Auth router', () => {
             .send({
               oldPassword: user.password,
               newPassword: '00000000',
+              newPassword2: '00000000',
             })
             .then(res => {
               expect(res.status).toEqual(200)
@@ -185,6 +186,7 @@ describe('Testing Auth router', () => {
             .send({
               oldPassword: user.password,
               newPassword: '12345',
+              newPassword2: '12345',
             })
             .then(res => {
               throw res
@@ -203,6 +205,7 @@ describe('Testing Auth router', () => {
             .send({
               oldPassword: 'notTheRightPassword',
               newPassword: '00000000000000',
+              newPassword2: '00000000000000',
             })
             .then(res => {
               throw res
@@ -220,6 +223,7 @@ describe('Testing Auth router', () => {
             .send({
               oldPassword: 'notTheRightPassword',
               newPassword: '00000000000000',
+              newPassword2: '00000000000000',
             })
             .then(res => {
               throw res
@@ -243,6 +247,7 @@ describe('Testing Auth router', () => {
             .send({
               oldPassword: user.password,
               newPassword: '00000000',
+              newPassword2: '00000000',
             })
         )
         .then(res => {
