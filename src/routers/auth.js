@@ -40,6 +40,12 @@ authRouter.post('/auth', jsonParser, (req, res, next) => {
   new User.createFromSignup(user)
     .then(user => user.tokenCreate())
     .then(token => {
+      res.set({
+        'Strict-Transport-Security': 'max-age: 10000000000; includeSubDomains',
+        'X-Content-Type-Options': 'nosniff',
+        'X-XSS-Protection': '1; mode=block',
+        'X-Frame-Options': 'DENY',
+      })
       res.cookie('X-VtT-Token', token, {maxAge: 86400000, httpOnly: true, secure: true})
       res.send(token)
     })
@@ -61,6 +67,12 @@ authRouter.get('/auth', basicAuth, (req, res, next) => {
 
   req.user.tokenCreate()
     .then(token => {
+      res.set({
+        'Strict-Transport-Security': 'max-age: 10000000000; includeSubDomains',
+        'X-Content-Type-Options': 'nosniff',
+        'X-XSS-Protection': '1; mode=block',
+        'X-Frame-Options': 'DENY',
+      })
       res.cookie('X-VtT-Token', token, {maxAge: 86400000, httpOnly: true, secure: true})
       res.send(token)
     })
@@ -87,6 +99,12 @@ authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
     util.securityWarning('Clientside validation bypassed', 'A field is missing', passwords, 'authRouter.put /auth', requestInfo)
     return req.user.logout() // destroy session if security has been bypassed
       .then(() => {
+        res.set({
+          'Strict-Transport-Security': 'max-age: 10000000000; includeSubDomains',
+          'X-Content-Type-Options': 'nosniff',
+          'X-XSS-Protection': '1; mode=block',
+          'X-Frame-Options': 'DENY',
+        })
         res.clearCookie('X-VtT-Token')
         res.sendStatus(400)
       })
@@ -96,6 +114,12 @@ authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
     util.securityWarning('Clientside validation bypassed', 'Old password is equal to new password', passwords, 'authRouter.put /auth', requestInfo)
     return req.user.logout()
       .then(() => {
+        res.set({
+          'Strict-Transport-Security': 'max-age: 10000000000; includeSubDomains',
+          'X-Content-Type-Options': 'nosniff',
+          'X-XSS-Protection': '1; mode=block',
+          'X-Frame-Options': 'DENY',
+        })
         res.clearCookie('X-VtT-Token')
         res.sendStatus(400)
       })
@@ -105,6 +129,12 @@ authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
     util.securityWarning('Clientside validation bypassed', 'New password 1 and 2 don\'t match', passwords, 'authRouter.put /auth', requestInfo)
     return req.user.logout()
       .then(() => {
+        res.set({
+          'Strict-Transport-Security': 'max-age: 10000000000; includeSubDomains',
+          'X-Content-Type-Options': 'nosniff',
+          'X-XSS-Protection': '1; mode=block',
+          'X-Frame-Options': 'DENY',
+        })
         res.clearCookie('X-VtT-Token')
         res.sendStatus(400)
       })
@@ -114,6 +144,12 @@ authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
     util.securityWarning('Clientside validation bypassed', 'Password too short', passwords, 'authRouter.put /auth', requestInfo)
     return req.user.logout()
       .then(() => {
+        res.set({
+          'Strict-Transport-Security': 'max-age: 10000000000; includeSubDomains',
+          'X-Content-Type-Options': 'nosniff',
+          'X-XSS-Protection': '1; mode=block',
+          'X-Frame-Options': 'DENY',
+        })
         res.clearCookie('X-VtT-Token')
         res.sendStatus(400)
       })
@@ -123,7 +159,15 @@ authRouter.put('/auth', bearerAuth, jsonParser, (req, res, next) => {
   req.user.passwordHashCompare(passwords.oldPassword)
     .then(user => bcrypt.hash(passwords.newPassword, 1))
     .then(passwordHash => User.findOneAndUpdate({username: req.user.username}, {passwordHash}))
-    .then(() => res.sendStatus(200))
+    .then(() => {
+      res.set({
+        'Strict-Transport-Security': 'max-age: 10000000000; includeSubDomains',
+        'X-Content-Type-Options': 'nosniff',
+        'X-XSS-Protection': '1; mode=block',
+        'X-Frame-Options': 'DENY',
+      })
+      res.sendStatus(200)
+    })
     .catch(next)
 })
 
@@ -141,6 +185,12 @@ authRouter.get('/logout', bearerAuth, (req, res, next) => {
 
   req.user.logout()
     .then(() => {
+      res.set({
+        'Strict-Transport-Security': 'max-age: 10000000000; includeSubDomains',
+        'X-Content-Type-Options': 'nosniff',
+        'X-XSS-Protection': '1; mode=block',
+        'X-Frame-Options': 'DENY',
+      })
       res.clearCookie('X-VtT-Token')
       res.sendStatus(200)
     })
