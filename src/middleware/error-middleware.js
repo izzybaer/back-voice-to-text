@@ -1,5 +1,13 @@
 export default (err, req, res, next) => {
   console.error(err)
+
+  res.set({
+    'Strict-Transport-Security': 'max-age: 10000000000; includeSubDomains',
+    'X-Content-Type-Options': 'nosniff',
+    'X-XSS-Protection': '1; mode=block',
+    'X-Frame-Options': 'DENY',
+  })
+
   if(err.status)
     return res.sendStatus(err.status)
 
