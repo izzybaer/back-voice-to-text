@@ -18,7 +18,15 @@ documentRouter.post('/document', bearerAuth, jsonParser, (req, res, next) => {
 
   new Document({...doc, ownerId: req.user._id})
     .save()
-    .then(document => res.json(document))
+    .then(document => {
+      res.set({
+        'Strict-Transport-Security': 'max-age: 10000000000; includeSubDomains',
+        'X-Content-Type-Options': 'nosniff',
+        'X-XSS-Protection': '1; mode=block',
+        'X-Frame-Options': 'DENY',
+      })
+      res.json(document)
+    })
     .catch(next)
 })
 
@@ -30,7 +38,18 @@ documentRouter.get('/document/:id', bearerAuth, (req, res, next) => {
   console.log('User Info:', {...req.user._doc, passwordHash: undefined, tokenSeed: undefined, tokenExpire: undefined})
 
   Document.findById(docId)
-    .then(document => document ? res.json(document) : res.sendStatus(404)) // It might hit this .then block even if it doesn't find a valid doc, so check to make sure before sending back to the user
+    .then(document => {
+      res.set({
+        'Strict-Transport-Security': 'max-age: 10000000000; includeSubDomains',
+        'X-Content-Type-Options': 'nosniff',
+        'X-XSS-Protection': '1; mode=block',
+        'X-Frame-Options': 'DENY',
+      })
+      // It might hit this .then block even if it doesn't find a valid doc, so check to make sure before sending back to the user
+      if(document)
+        return res.json(document)
+      res.sendStatus(404)
+    })
     .catch(next)
 })
 
@@ -42,7 +61,15 @@ documentRouter.get('/document', bearerAuth, (req, res, next) => {
 
   Document.find({})
     .sort({title: 'asc'})
-    .then(documents => res.json(documents))
+    .then(documents => {
+      res.set({
+        'Strict-Transport-Security': 'max-age: 10000000000; includeSubDomains',
+        'X-Content-Type-Options': 'nosniff',
+        'X-XSS-Protection': '1; mode=block',
+        'X-Frame-Options': 'DENY',
+      })
+      res.json(documents)
+    })
     .catch(next)
 })
 
@@ -56,7 +83,15 @@ documentRouter.put('/document/:id', bearerAuth, jsonParser, (req, res, next) => 
   console.log('User Info:', {...req.user._doc, passwordHash: undefined, tokenSeed: undefined, tokenExpire: undefined})
 
   Document.findByIdAndUpdate(docId, req.body, {new: true, runValidators: true})
-    .then(document => res.json(document))
+    .then(document => {
+      res.set({
+        'Strict-Transport-Security': 'max-age: 10000000000; includeSubDomains',
+        'X-Content-Type-Options': 'nosniff',
+        'X-XSS-Protection': '1; mode=block',
+        'X-Frame-Options': 'DENY',
+      })
+      res.json(document)
+    })
     .catch(next)
 })
 
@@ -68,7 +103,15 @@ documentRouter.delete('/document/:id', bearerAuth, (req, res, next) => {
   console.log('User Info:', {...req.user._doc, passwordHash: undefined, tokenSeed: undefined, tokenExpire: undefined})
 
   Document.findByIdAndRemove(docId)
-    .then(() => res.sendStatus(204))
+    .then(() => {
+      res.set({
+        'Strict-Transport-Security': 'max-age: 10000000000; includeSubDomains',
+        'X-Content-Type-Options': 'nosniff',
+        'X-XSS-Protection': '1; mode=block',
+        'X-Frame-Options': 'DENY',
+      })
+      res.sendStatus(204)
+    })
     .catch(next)
 })
 
